@@ -120,7 +120,10 @@ def registra(tipo, entidade_id, payload, autor=None, ts=None):
             os.fsync(fh.fileno())
         con.execute("COMMIT")
     except Exception:
-        con.execute("ROLLBACK")
+        try:
+            con.execute("ROLLBACK")
+        except duckdb.Error:
+            pass
         if DUMP.exists():
             with DUMP.open("r+", encoding="utf-8") as fh:
                 fh.truncate(tamanho_antes)

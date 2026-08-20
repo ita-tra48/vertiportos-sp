@@ -44,6 +44,19 @@ class _CaminhoComFalhaNoAppend:
         return self._real.read_text()
 
 
+class _ConexaoComFalhaNoCommit:
+    def __init__(self, real):
+        self._real = real
+
+    def execute(self, stmt, *a, **kw):
+        if stmt == "COMMIT":
+            raise RuntimeError("falha simulada no commit")
+        if stmt == "ROLLBACK":
+            raise duckdb.TransactionException(
+                "cannot rollback - no transaction is active")
+        return self._real.execute(stmt, *a, **kw)
+
+
 def test_novo_id_tem_prefixo_e_seis_chars():
     i = banco.novo_id("dec")
     assert i.startswith("dec-")
@@ -200,6 +213,27 @@ def test_falha_no_append_do_dump_desfaz_o_banco(tmp_repo, monkeypatch):
         "SELECT status FROM tarefa WHERE id = ?", [eid]
     ).fetchone() is None
     assert con.execute("SELECT count(*) FROM evento").fetchone() == (0,)
+
+
+def test_falha_no_commit_nao_deixa_rastro_e_propaga_erro_original(tmp_repo):
+    eid = banco.novo_id("tar")
+    antes = banco.DUMP.read_text() if banco.DUMP.exists() else ""
+    proxy = _ConexaoComFalhaNoCommit(banco.conecta())
+    original_conecta = banco.conecta
+    banco.conecta = lambda somente_leitura=False: proxy
+    try:
+        with pytest.raises(RuntimeError, match="falha simulada no commit"):
+            banco.registra("tarefa", eid, {"titulo": "X", "resp": "Ana",
+                                           "status": "aberta"}, autor="G")
+    finally:
+        banco.conecta = original_conecta
+    depois = banco.DUMP.read_text() if banco.DUMP.exists() else ""
+    assert depois == antes
+    banco.rebuild()
+    con = banco.conecta()
+    assert con.execute(
+        "SELECT status FROM tarefa WHERE id = ?", [eid]
+    ).fetchone() is None
 
 
 def test_conecta_somente_leitura_apos_escrita_nao_e_gravavel(tmp_repo):
