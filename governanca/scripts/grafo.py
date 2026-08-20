@@ -4,9 +4,14 @@ import banco
 
 FAIXAS = ["meta", "decisao", "experimento", "fonte", "referencia",
           "arquivo", "tarefa", "pendencia", "ia"]
-CORES = {"meta": "#1d4ed8", "decisao": "#b45309", "experimento": "#047857",
-         "fonte": "#7c3aed", "referencia": "#0e7490", "arquivo": "#475569",
-         "tarefa": "#ca8a04", "pendencia": "#be123c", "ia": "#db2777"}
+CORES = {"meta": "#14457f", "decisao": "#5a3a92", "experimento": "#1f5c3d",
+         "fonte": "#7a4a12", "referencia": "#0f5b6b", "arquivo": "#4a5560",
+         "tarefa": "#8a6a10", "pendencia": "#ab2118", "ia": "#8c2f6d"}
+ROTULOS = {"meta": "metas", "decisao": "decisões",
+           "experimento": "experimentos", "fonte": "fontes de dados",
+           "referencia": "referências", "arquivo": "arquivos",
+           "tarefa": "tarefas", "pendencia": "pendências",
+           "ia": "interações com IA"}
 LARGURA_COLUNA = 240
 ALTURA_FAIXA = 110
 RAIO = 9
@@ -37,7 +42,7 @@ def posiciona(nos):
     return pos
 
 
-def _corta(texto, limite=34):
+def _corta(texto, limite=24):
     texto = " ".join(texto.split())
     return texto if len(texto) <= limite else texto[: limite - 1] + "…"
 
@@ -48,19 +53,20 @@ def svg(con):
     colunas = max([1] + [1 + (pos[n["id"]][0] - MARGEM - 160) // LARGURA_COLUNA
                          for n in nos])
     largura = MARGEM * 2 + 160 + colunas * LARGURA_COLUNA
-    altura = MARGEM * 2 + len(FAIXAS) * ALTURA_FAIXA
+    altura = MARGEM + (len(FAIXAS) - 1) * ALTURA_FAIXA + 60
     partes = [f'<svg xmlns="http://www.w3.org/2000/svg" id="grafo" '
               f'viewBox="0 0 {largura} {altura}" width="100%" '
-              f'height="{altura}" font-family="ui-monospace, monospace">']
+              f'height="{altura}" font-family="B612M, ui-monospace, monospace">']
     partes.append('<g id="camada">')
     for faixa, tipo in enumerate(FAIXAS):
         y = MARGEM + faixa * ALTURA_FAIXA
         partes.append(
             f'<text x="{MARGEM}" y="{y + 4}" font-size="13" '
-            f'fill="{CORES[tipo]}" font-weight="700">{tipo}</text>')
+            f'fill="{CORES[tipo]}" font-weight="700">'
+            f'{escape(ROTULOS.get(tipo, tipo))}</text>')
         partes.append(
             f'<line x1="{MARGEM}" y1="{y + 16}" x2="{largura - MARGEM}" '
-            f'y2="{y + 16}" stroke="#e2e8f0" stroke-width="1"/>')
+            f'y2="{y + 16}" stroke="#c3c9d1" stroke-width="1"/>')
     for aresta in arestas:
         origem, destino = pos.get(aresta["origem"]), pos.get(aresta["destino"])
         if not origem or not destino:
@@ -72,20 +78,21 @@ def svg(con):
         partes.append(
             f'<path d="M {origem[0]} {origem[1]} C {origem[0]} {meio_y} '
             f'{destino[0]} {meio_y} {destino[0]} {destino[1]}" fill="none" '
-            f'stroke="#94a3b8" stroke-width="1.2" opacity="0.75"/>')
+            f'stroke="#98a1ab" stroke-width="1.2" opacity="0.8"/>')
         partes.append(
             f'<text x="{(origem[0] + destino[0]) / 2}" y="{meio_y - 3}" '
-            f'font-size="9" fill="#64748b" text-anchor="middle">'
-            f'{escape(aresta["relacao"])}</text>')
+            f'font-size="9" fill="#5c646d" text-anchor="middle" '
+            f'paint-order="stroke" stroke="#fbfbf9" stroke-width="3" '
+            f'stroke-linejoin="round">{escape(aresta["relacao"])}</text>')
     for no in nos:
         x, y = pos[no["id"]]
-        cor = CORES.get(no["tipo"], "#334155")
+        cor = CORES.get(no["tipo"], "#4a5560")
         partes.append(
             f'<a href="trilha.html#{escape(no["id"])}">'
             f'<circle cx="{x}" cy="{y}" r="{RAIO}" fill="{cor}" '
-            f'stroke="#ffffff" stroke-width="2"><title>'
+            f'stroke="#fbfbf9" stroke-width="2"><title>'
             f'{escape(no["id"])} — {escape(no["rotulo"])}</title></circle>'
             f'<text x="{x + RAIO + 6}" y="{y + 4}" font-size="11" '
-            f'fill="#0f172a">{escape(_corta(no["rotulo"]))}</text></a>')
+            f'fill="#14181c">{escape(_corta(no["rotulo"]))}</text></a>')
     partes.append("</g></svg>")
     return "\n".join(partes)

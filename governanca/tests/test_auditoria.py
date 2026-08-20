@@ -57,7 +57,7 @@ def test_postura_critica(cenario):
 def test_selo_vermelho_com_orfaos(cenario):
     m = auditoria.calcula(cenario)
     assert m["selo"][0] == "vermelho"
-    assert any("orfao" in motivo for motivo in m["selo"][1])
+    assert any("órfão" in motivo for motivo in m["selo"][1])
 
 
 def test_higiene_pega_tarefa_sem_prazo(cenario, monkeypatch):
@@ -118,6 +118,11 @@ def test_selo_vermelho_quando_taxa_integral_e_cem(saudavel, monkeypatch):
 def test_higiene_indice_de_dias_aciona_o_selo(tmp_repo, monkeypatch):
     monkeypatch.setenv("GOV_AUTOR", "Gustavo")
     ts_antigo = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=20)
+    met = banco.novo_id("met")
+    dec = banco.novo_id("dec")
+    banco.registra("meta", met, {"titulo": "M", "status": "aberta"})
+    banco.registra("decisao", dec, {"titulo": "D", "just": "J"})
+    banco.registra("aresta", dec, {"relacao": "atende", "destino": met})
     banco.registra("pendencia", banco.novo_id("pen"),
                    {"titulo": "Confirmar cobertura", "status": "aberta"},
                    ts=ts_antigo)
@@ -127,4 +132,4 @@ def test_higiene_indice_de_dias_aciona_o_selo(tmp_repo, monkeypatch):
     assert h["pendencias_velhas"][0][3] > auditoria.LIMITE_SELO_DIAS
     m = auditoria.calcula(con)
     assert m["selo"][0] == "vermelho"
-    assert any("pendencia" in motivo for motivo in m["selo"][1])
+    assert any("pendência" in motivo for motivo in m["selo"][1])

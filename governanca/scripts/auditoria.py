@@ -9,7 +9,7 @@ MINIMO_RASTREABILIDADE = 90.0
 
 
 def _pct(parte, total):
-    return 100.0 if total == 0 else round(100.0 * parte / total, 1)
+    return None if total == 0 else round(100.0 * parte / total, 1)
 
 
 def _orfaos(con):
@@ -32,10 +32,11 @@ def rastreabilidade(con):
         "AND origem IN (SELECT id FROM decisao) "
         "AND destino IN (SELECT id FROM meta)").fetchone()[0]
     orfaos = _orfaos(con)
+    metas_total = con.execute("SELECT count(*) FROM meta").fetchone()[0]
     return {"arquivos_com_decisao": _pct(arq_ok, arq_total),
             "decisoes_com_meta": _pct(dec_ok, dec_total),
             "arquivos_total": arq_total, "decisoes_total": dec_total,
-            "orfaos": orfaos}
+            "metas_total": metas_total, "orfaos": orfaos}
 
 
 def _commits_por_semana():
@@ -84,19 +85,28 @@ def postura(con):
 
 
 def selo(m):
+    r = m["rastreabilidade"]
+    if not r["metas_total"] or not r["decisoes_total"]:
+        return ("cinza", ["banco ainda sem meta ou sem decisão registrada: "
+                          "não há lastro para auditar"])
     motivos = []
-    if m["rastreabilidade"]["orfaos"]:
-        motivos.append(f"{len(m['rastreabilidade']['orfaos'])} no(s) orfao(s)")
-    if m["rastreabilidade"]["decisoes_com_meta"] < MINIMO_RASTREABILIDADE:
-        motivos.append("decisoes sem meta vinculada abaixo de "
+    orfaos = len(r["orfaos"])
+    if orfaos:
+        motivos.append(f"{orfaos} nó órfão" if orfaos == 1
+                       else f"{orfaos} nós órfãos")
+    if (r["decisoes_com_meta"] or 0) < MINIMO_RASTREABILIDADE:
+        motivos.append("decisões vinculadas a uma meta abaixo de "
                        f"{MINIMO_RASTREABILIDADE:.0f}%")
     velhas = [p for p in m["higiene"]["pendencias_velhas"]
               if p[3] > LIMITE_SELO_DIAS]
     if velhas:
-        motivos.append(f"{len(velhas)} pendencia(s) aberta(s) ha mais de "
-                       f"{LIMITE_SELO_DIAS} dias")
+        motivos.append(
+            f"1 pendência aberta há mais de {LIMITE_SELO_DIAS} dias"
+            if len(velhas) == 1 else
+            f"{len(velhas)} pendências abertas há mais de "
+            f"{LIMITE_SELO_DIAS} dias")
     if m["postura"]["total"] and m["postura"]["taxa_integral"] == 100.0:
-        motivos.append("aceite integral em 100% das interacoes com IA")
+        motivos.append("aceite integral em 100% das interações com IA")
     return ("verde" if not motivos else "vermelho", motivos)
 
 
