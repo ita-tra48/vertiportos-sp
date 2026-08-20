@@ -65,7 +65,10 @@ def svg(con):
         origem, destino = pos.get(aresta["origem"]), pos.get(aresta["destino"])
         if not origem or not destino:
             continue
-        meio_y = (origem[1] + destino[1]) / 2
+        if origem[1] == destino[1]:
+            meio_y = origem[1] - ALTURA_FAIXA / 3
+        else:
+            meio_y = (origem[1] + destino[1]) / 2
         partes.append(
             f'<path d="M {origem[0]} {origem[1]} C {origem[0]} {meio_y} '
             f'{destino[0]} {meio_y} {destino[0]} {destino[1]}" fill="none" '
