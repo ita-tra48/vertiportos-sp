@@ -1,0 +1,8 @@
+.Rhistory
+.RData
+.Rproj.user/
+dados/bruto/*
+!dados/bruto/.gitkeep
+relatorio/*_files/
+relatorio/*.html
+.DS_Store
