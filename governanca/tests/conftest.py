@@ -19,5 +19,7 @@ def tmp_repo(tmp_path, monkeypatch):
     monkeypatch.setattr(banco, "SCHEMA",
                         tmp_path / "governanca" / "schemas" / "schema.sql")
     monkeypatch.setattr(banco, "_CON", None)
+    monkeypatch.setattr(banco, "_CON_SOMENTE_LEITURA", None)
     yield tmp_path
     banco._CON = None
+    banco._CON_SOMENTE_LEITURA = None

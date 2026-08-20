@@ -24,6 +24,7 @@ RELACOES = frozenset({"tem", "atende", "usa", "produz", "justifica",
 
 _ALFABETO = "0123456789abcdefghijklmnopqrstuvwxyz"
 _CON = None
+_CON_SOMENTE_LEITURA = None
 
 
 def novo_id(prefixo):
@@ -52,10 +53,11 @@ def _cria(con):
 
 
 def rebuild():
-    global _CON
+    global _CON, _CON_SOMENTE_LEITURA
     if _CON is not None:
         _CON.close()
         _CON = None
+    _CON_SOMENTE_LEITURA = None
     if DB.exists():
         DB.unlink()
     DB.parent.mkdir(parents=True, exist_ok=True)
@@ -75,14 +77,17 @@ def _desatualizado():
 
 
 def conecta(somente_leitura=False):
-    global _CON
+    global _CON, _CON_SOMENTE_LEITURA
     if _desatualizado():
         rebuild()
-    if _CON is None:
+    if _CON is None or _CON_SOMENTE_LEITURA != somente_leitura:
+        if _CON is not None:
+            _CON.close()
         DB.parent.mkdir(parents=True, exist_ok=True)
         _CON = duckdb.connect(str(DB), read_only=somente_leitura)
         if not somente_leitura:
             _cria(_CON)
+        _CON_SOMENTE_LEITURA = somente_leitura
     return _CON
 
 
@@ -102,10 +107,10 @@ def registra(tipo, entidade_id, payload, autor=None, ts=None):
                _sql_literal(entidade_id), _sql_literal(corpo)]
     stmt = "INSERT INTO evento VALUES (" + ", ".join(valores) + ");"
     con = conecta()
-    con.execute(stmt)
     DUMP.parent.mkdir(parents=True, exist_ok=True)
     with DUMP.open("a", encoding="utf-8") as fh:
         fh.write(stmt + "\n")
+    con.execute(stmt)
     os.utime(DB, None)
     return evento_id
 

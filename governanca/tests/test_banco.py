@@ -3,8 +3,21 @@ import os
 import sys
 from pathlib import Path
 
+import duckdb
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import banco
+
+
+class _ConexaoComFalhaNoInsert:
+    def __init__(self, real):
+        self._real = real
+
+    def execute(self, stmt, *a, **kw):
+        if stmt.startswith("INSERT INTO evento"):
+            raise RuntimeError("falha simulada")
+        return self._real.execute(stmt, *a, **kw)
 
 
 def test_novo_id_tem_prefixo_e_seis_chars():
@@ -69,7 +82,6 @@ def test_resolve_por_prefixo(tmp_repo):
 
 
 def test_resolve_recusa_inexistente(tmp_repo):
-    import pytest
     with pytest.raises(ValueError):
         banco.resolve("dec-zzzzzz")
 
@@ -77,3 +89,57 @@ def test_resolve_recusa_inexistente(tmp_repo):
 def test_autor_atual_usa_env(monkeypatch):
     monkeypatch.setenv("GOV_AUTOR", "Fulano")
     assert banco.autor_atual() == "Fulano"
+
+
+def test_dump_sobrevive_a_falha_no_banco(tmp_repo):
+    eid = banco.novo_id("dec")
+    proxy = _ConexaoComFalhaNoInsert(banco.conecta())
+    original_conecta = banco.conecta
+    banco.conecta = lambda somente_leitura=False: proxy
+    try:
+        with pytest.raises(RuntimeError):
+            banco.registra("decisao", eid, {"titulo": "T", "just": "J"}, autor="G")
+    finally:
+        banco.conecta = original_conecta
+    assert "INSERT INTO evento" in banco.DUMP.read_text()
+    banco.rebuild()
+    con2 = banco.conecta()
+    assert con2.execute(
+        "SELECT titulo FROM decisao WHERE id = ?", [eid]
+    ).fetchone() == ("T",)
+
+
+def test_dump_continua_append_only_apos_falha(tmp_repo):
+    banco.registra("meta", banco.novo_id("met"), {"titulo": "A"}, autor="G")
+    antes = banco.DUMP.read_text()
+    proxy = _ConexaoComFalhaNoInsert(banco.conecta())
+    original_conecta = banco.conecta
+    banco.conecta = lambda somente_leitura=False: proxy
+    try:
+        with pytest.raises(RuntimeError):
+            banco.registra("meta", banco.novo_id("met"), {"titulo": "B"}, autor="G")
+    finally:
+        banco.conecta = original_conecta
+    depois = banco.DUMP.read_text()
+    assert depois.startswith(antes)
+    assert depois.count("INSERT INTO evento") == 2
+
+
+def test_conecta_somente_leitura_apos_escrita_nao_e_gravavel(tmp_repo):
+    banco.registra("meta", banco.novo_id("met"), {"titulo": "A"}, autor="G")
+    con_ro = banco.conecta(somente_leitura=True)
+    with pytest.raises(duckdb.Error):
+        con_ro.execute(
+            "INSERT INTO evento VALUES "
+            "('x', '2020-01-01 00:00:00', 'G', 'meta', 'met-xxxxxx', '{}')"
+        )
+
+
+def test_conecta_escrita_apos_somente_leitura_funciona(tmp_repo):
+    banco.conecta(somente_leitura=True)
+    eid = banco.novo_id("met")
+    banco.registra("meta", eid, {"titulo": "B"}, autor="G")
+    con = banco.conecta()
+    assert con.execute(
+        "SELECT titulo FROM meta WHERE id = ?", [eid]
+    ).fetchone() == ("B",)
