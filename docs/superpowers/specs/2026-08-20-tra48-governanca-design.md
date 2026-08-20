@@ -1,224 +1,270 @@
-# TRA-48 — Infraestrutura de governança computável (camada B)
+# Camada B — Governança Computável do Projeto B1 (TRA-48)
 
-Data: 2026-08-20
-Status: aprovado
-Escopo desta spec: **somente a infraestrutura**. O problema de localização de
-vertiportos (camada A) não é tratado aqui.
+**Status:** aprovado (sessão 19-20/08/2026; documento reconstruído em 20/08/2026 após perda do original)
+**Enunciado de origem:** `~/Documents/ITA/TRA-48/Projeto_TRA48.pdf`, cap. 5 e 8
+**Repo:** `~/Documents/ITA/TRA-48_Projeto`
 
-## 1. Contexto e restrições
+## 1. Problema que este sistema resolve
 
-O Projeto B1 de TRA-48 tem duas camadas avaliadas de forma independente:
+O Projeto B1 é avaliado em duas camadas. A camada A é o modelo de Pesquisa
+Operacional (localização de vertiportos em São Paulo). A camada B, que vale
+**25% da nota do projeto**, é a governança do próprio trabalho: metas, tarefas,
+pendências, decisões, fontes, arquivos, referências, experimentos e interações
+com IA, registrados enquanto o trabalho acontece, ligados em um grafo,
+auditados por métricas e publicados em site gerado do banco.
 
-- **Camada A (substantiva, 55%)** — modelar e resolver um problema de programação
-  matemática para localizar vertiportos em São Paulo (AAM/UAM).
-- **Camada B (metodológica, 25% governança + parte dos 20% de comunicação)** — como
-  o grupo conduziu, registrou e auditou o próprio trabalho com apoio de IA,
-  publicado e verificável.
-
-Regra fundamental do enunciado, que governa todo este desenho:
+A regra dura do enunciado (§5.1):
 
 > O que não estiver no banco, não aconteceu.
 
-Restrições herdadas do enunciado (`~/Documents/ITA/TRA-48/Projeto_TRA48.pdf`):
+O enunciado (§5.2) diz que cada grupo **recebe um repositório-modelo já
+funcionando**. Até 20/08/2026 ele não foi distribuído. Este spec define a infra
+que o grupo constrói no lugar dele. Se o repo-modelo chegar depois, os registros
+migram por script (o log de eventos é portável — ver §4.3).
 
-| # | Restrição | Origem |
+## 2. Requisitos derivados do enunciado
+
+| # | Requisito | Fonte |
 |---|---|---|
-| R1 | Banco DuckDB é a fonte de verdade; Markdown e site são derivados | §5.2 |
-| R2 | 9 classes de entidade obrigatórias no registro | §5.3 |
-| R3 | Entidades são nós de um grafo com relações nomeadas | §5.4 |
-| R4 | Nó órfão é defeito, detectado pela auditoria e exibido no site | §5.4 |
-| R5 | Site no GitHub Pages com 8 seções específicas | §5.5 |
-| R6 | Registro de IA exige campo de crítica humana; sem crítica não se registra | §5.6.2 |
-| R7 | Taxa de aceite integral é métrica pública; ~100% é sinal de ausência de revisão | §5.6.3 |
-| R8 | Cada integrante defende qualquer linha do modelo, do código e do relatório | §5.6.4 |
-| R9 | Auditoria publica rastreabilidade, cadência, higiene e postura crítica | §5.7 |
-| R10 | Escrita sempre pelo `./gov`; leitura pelo assistente via MCP | §5.8 |
-| R11 | Contribuição individual visível em registros do banco e commits do repo | §7.3 |
-| R12 | Banco preenchido em bloco na semana da entrega compromete a nota | §8.4 |
-| R13 | Projeto reprodutível do zero, a partir dos dados brutos, por terceiros | §6.2 |
+| R1 | Nove entidades registráveis: metas, tarefas, pendências, decisões, fontes, arquivos, referências, experimentos, interações com IA | §5.3 |
+| R2 | Grafo executivo: entidades são nós, relações são arestas tipadas; nó órfão é defeito detectado pela auditoria e exibido no site | §5.4 |
+| R3 | Interação com IA **inválida sem o campo crítica humana** | §5.6.2 |
+| R4 | Taxa de aceite integral exibida no site | §5.6.3 |
+| R5 | Auditoria automática: rastreabilidade, cadência, higiene, postura crítica | §5.7 |
+| R6 | Site com 8 seções, gerado a cada push, espelho fiel do banco | §5.5 |
+| R7 | Fluxo `./gov <cmd>` → banco → `./gov update` → `git push` → site | §5.2 |
+| R8 | Superfície de comandos do §5.8 preservada literalmente | §5.8 |
+| R9 | Leitura do banco pelo assistente de IA via MCP; **escrita sempre pelo `./gov`** | §5.8 |
+| R10 | Contribuição individual visível: cada integrante autor de registros e de commits | §7.3 |
+| R11 | Reprodutibilidade ponta a ponta a partir dos dados brutos | §6.2 |
+| R12 | Linguagem padrão é R; outra linguagem exige justificativa registrada | §4.6 |
 
-### 1.1 Divergência conhecida do enunciado
+## 3. Arquitetura aprovada
 
-§5.2 afirma que cada grupo **recebe** um repositório-modelo funcionando, e o marco
-de 19/08 diz "repositório clonado". Esse repositório não foi disponibilizado até
-20/08. Decisão do grupo: construir a infraestrutura própria agora, para não perder
-cadência (R12 pune justamente a perda de cadência), e migrar os registros por
-script caso o modelo do professor chegue. A migração é viável porque as 9 entidades
-e as relações são ditadas pelo enunciado; o que pode diferir é a implementação, não
-o conteúdo. `governanca/scripts/migrar.py` é previsto como ponto de extensão.
+```
+TRA-48_Projeto/
+|-- gov                        # wrapper shell -> governanca/.venv/bin/python
+|-- governanca/
+|   |-- .venv/                 # NAO versionado; duckdb + pytest
+|   |-- requirements.txt
+|   |-- projeto.duckdb         # NAO versionado (ver 4.2)
+|   |-- dump.sql               # VERSIONADO, append-only: a fonte de verdade em git
+|   |-- schemas/schema.sql     # DDL: tabela evento + views derivadas
+|   |-- scripts/
+|   |   |-- gov.py             # CLI: parsing, validacao, escrita de eventos
+|   |   |-- banco.py           # conexao, rebuild a partir do dump, append de evento
+|   |   |-- auditoria.py       # metricas do 5.7
+|   |   |-- grafo.py           # layout determinístico -> SVG
+|   |   |-- site.py            # gerador das 8 paginas
+|   |   `-- mcp_gov.py         # servidor MCP somente-leitura
+|   `-- site/                  # saida gerada; NAO versionada (ver 4.4)
+|-- app/                       # camada A, 100% em R
+|   |-- 01-carrega.R ... 05-analises.R
+|   `-- R/gov.R                # leitura do banco pelo R
+|-- dados/{bruto,tratado}/
+|-- docs/                      # documentos-fonte (PDFs, specs, plans) — NAO e o site
+|-- relatorio/ apresentacao/
+`-- .github/workflows/pages.yml
+```
 
-### 1.2 Correção deliberada ao organograma
+### 3.1 Motor em Python, projeto em R
 
-O organograma de §5.2 posiciona `projeto.duckdb` como arquivo do repositório. Com 4
-pessoas commitando, um binário DuckDB produz conflito de merge irresolvível: Git não
-sabe fundir dois bancos. Este desenho mantém o organograma, mas invertendo o que é
-versionado:
+O motor de governança é Python + DuckDB; a camada A é 100% R. Justificativa:
+DuckDB e o servidor MCP têm ferramental maduro em Python, e o motor é
+infraestrutura, não análise — o enunciado exige R para *o projeto* (§4.6), e a
+exigência é atendida integralmente pelo `app/`. Esta escolha é registrada como
+decisão no próprio banco, conforme §4.6 exige.
 
-- `governanca/dump.sql` — **versionado**, append-only, é o artefato de verdade em Git.
-- `governanca/projeto.duckdb` — **ignorado pelo Git**, reconstruído do dump por `./gov`.
+### 3.2 O log de eventos é a única tabela escrita
 
-Isso é fiel à intenção do enunciado, que já chama o dump de "história legível,
-versionada no git", e torna o merge de dois registros simultâneos um merge de texto.
-O merge driver `union` em `.gitattributes` resolve o caso comum sem intervenção.
+Todas as nove entidades e todas as arestas são gravadas como linhas em uma
+única tabela append-only `evento`:
 
-## 2. Papéis e fronteiras
-
-Papel é **dono da revisão**, não silo. R8 exige que cada integrante defenda qualquer
-linha; portanto o dono responde pela frente e é CODEOWNER dela, mas o revisor
-obrigatório de cada PR é sempre de outra frente, em round-robin. Ninguém aprova o
-próprio PR.
-
-| Papel | Frente | CODEOWNER |
+| coluna | tipo | papel |
 |---|---|---|
-| Dados & Demanda | fontes, zonas OD, agregação, demanda capturável | `app/dados/`, `app/R/prep-*.R` |
-| Modelagem | formulação, variáveis, restrições, tratabilidade, solver | `app/R/modelo/` |
-| Experimentos & Análise | rodadas, relaxação linear, dual, sensibilidade, fronteira | `app/R/exp/`, `app/resultados/` |
-| Governança & Publicação | motor `gov`, auditoria, site, CI, integração do relatório | `governanca/`, `.github/`, `docs/` |
+| `evento_id` | TEXT PK | `evt-` + 12 chars base32 de `os.urandom` |
+| `ts` | TIMESTAMP | instante do registro (UTC) |
+| `autor` | TEXT | `git config user.name`, ou `$GOV_AUTOR` |
+| `tipo` | TEXT | uma das 9 entidades, ou `aresta` |
+| `entidade_id` | TEXT | id do nó a que o evento se refere |
+| `payload` | JSON | campos da entidade |
 
-Cada capítulo do relatório é arquivo separado com CODEOWNER individual, satisfazendo
-R11 no nível de arquivo.
+As entidades são **views** sobre `evento` (último payload por `entidade_id`,
+mesclado com o `ts`/`autor` de criação). Consequências:
 
-## 3. A ponte Git ↔ banco
+- `dump.sql` é uma sequência de `INSERT INTO evento`, então merge de git entre
+  4 pessoas é concatenação — conflito só na cauda, nunca no meio;
+- edição não destrói história: `patch` e `fecha` gravam um novo evento com o
+  payload completo já mesclado, sob o mesmo `tipo` e `entidade_id`; a view lê o
+  evento mais recente e o original permanece auditável, o que sustenta "banco vivo, não preenchido retroativamente" (§8.2);
+- "preenchido em bloco na semana da entrega" (§8.4) é detectável pela própria
+  distribuição de `ts` — é isso que a métrica de cadência lê.
 
-R1 e R12 só são efetivos se for mecanicamente impossível mergear código sem registro.
-Quatro mecanismos, em camadas:
+### 3.3 Identificadores
 
-1. **Corpo do PR declara os registros** que ele materializa: `Registros: D-014, E-007, IA-031`.
-   Template de PR obriga o campo.
-2. **CI valida os IDs** contra `dump.sql` e falha se algum não existir. PR que toca
-   `app/R/modelo/` sem citar decisão registrada não passa.
-3. **`./gov` grava o `commit_sha`** em cada registro, fechando o vínculo nos dois
-   sentidos: o experimento aponta para o código exato que o produziu (R13).
-4. **Auditoria acusa órfãos** — arquivo sem decisão, conclusão sem experimento — como
-   warning no site (R4).
+`<prefixo>-<6 chars base32>`, ex. `dec-0a3f2b`, `exp-7k1m9d`. Prefixos:
+`met`, `tar`, `pen`, `dec`, `fon`, `arq`, `ref`, `exp`, `ia`.
 
-## 4. Esquema do banco
+Sem contador sequencial: 4 pessoas registrando em branches paralelos com
+contador colidiriam no merge. A CLI aceita prefixo único como referência, no
+estilo do git (`./gov liga dec-0a3 usa fon-4c2`).
 
-Todo nó tem: `id` legível (`D-014`), `autor`, `criado_em`, `commit_sha`, `titulo`.
+## 4. Desvios deliberados do organograma do professor
 
-| Tabela | Prefixo | Campos próprios |
+Ambos são desvios do §5.2 e ambos são registrados como decisão no banco, com
+justificativa e alternativa descartada.
+
+### 4.1 O que é versionado
+
+O organograma lista `projeto.duckdb` dentro de `governanca/`. Um binário DuckDB
+versionado com 4 pessoas escrevendo em paralelo dá conflito irreconciliável a
+cada push — git não faz merge de binário, e o "vencedor" apaga registros do
+outro silenciosamente. Isso destrói justamente a garantia de que o banco é a
+fonte de verdade.
+
+### 4.2 Decisão
+
+`projeto.duckdb` **não é versionado** (entra no `.gitignore`). O artefato
+versionado é `governanca/dump.sql`, append-only e legível. `./gov` reconstrói o
+banco a partir dele quando ele não existe ou está desatualizado. O enunciado já
+descreve `dump.sql` como "historia legivel, versionada no git" — este desvio só
+remove a redundância conflitante, mantendo intacta a semântica de fonte de
+verdade.
+
+**Alternativa descartada:** versionar o `.duckdb` e serializar o trabalho (uma
+pessoa registra por vez). Descartada porque inviabiliza cadência paralela, que
+é métrica avaliada (§5.7).
+
+### 4.3 O site gerado não é versionado, e não mora em `docs/`
+
+O organograma põe a saída publicada em `docs/`. Duas objeções: (a) `docs/` neste
+repo já guarda os documentos-fonte (enunciado, plano de disciplina, specs), e
+misturar fonte com artefato gerado torna o `git status` ilegível; (b) HTML
+gerado versionado por 4 pessoas conflita a cada `./gov update` sem trazer
+informação nova — ele é função pura do banco.
+
+**Decisão:** o site é gerado em `governanca/site/` (gitignored) e publicado pelo
+GitHub Pages via *artifact* do Actions, não por branch/pasta. O CI reconstrói o
+banco do `dump.sql` e gera o site do zero a cada push, o que torna a
+propriedade "o site é espelho fiel do banco" (§5.2) **verificável por
+construção** em vez de dependente de disciplina humana.
+
+**Alternativa descartada:** `docs/` como pasta publicada, com `./gov update`
+obrigatório antes de cada commit. Descartada porque um commit sem `update`
+publica site defasado — exatamente a falha que o enunciado quer evitar.
+
+## 5. Superfície da CLI
+
+Preservada literalmente do §5.8, mais o mínimo necessário para operar o grafo:
+
+```
+./gov meta        "titulo" [--desc ...]
+./gov tarefa      "titulo" --resp NOME [--prazo YYYY-MM-DD] [--meta ID]
+./gov pendencia   "titulo" [--bloqueia ID]
+./gov decisao     "titulo" --just "..." [--alt "..."]... [--meta ID]
+./gov fonte       "nome" --origem URL [--formato ...] [--cobertura ...] --limitacoes "..."
+./gov arquivo     CAMINHO [--desc ...] [--decisao ID]
+./gov referencia  "citacao" [--url ...] [--doi ...]
+./gov experimento --variante NOME [--p chave=valor]... [--obj N] [--gap N] [--tempo N] [--hipotese ...] [--conclusao ...]
+./gov ia          --proposito NOME --aceito {integral,parcial,descarte} --critica "..." [--modelo ...] [--pedido ...] [--retorno ...]
+./gov liga        ORIGEM RELACAO DESTINO
+./gov fecha       ID [--resolucao ...]
+./gov patch       ID campo=valor...
+./gov status
+./gov auditoria
+./gov consulta    "SELECT ..."      # somente leitura
+./gov update                        # dump + grafo + auditoria + site
+./gov rebuild                       # banco a partir do dump.sql
+```
+
+### 5.1 Validações que a CLI recusa
+
+Estas não são conveniências; são a codificação das regras do enunciado.
+
+1. `ia` sem `--critica` **não grava** (§5.6.2), e `--critica` com menos de 20
+   caracteres também não — "ok" não é crítica.
+2. `decisao` sem `--just` não grava (§5.3 exige justificativa).
+3. `fonte` sem `--limitacoes` não grava (§3.2, e §8.2 premia reconhecer a
+   limitação do próprio dado).
+4. `tarefa` sem `--resp` não grava (§5.7, higiene).
+5. `consulta` rejeita qualquer statement que não seja `SELECT`/`WITH`.
+
+### 5.2 Autoria
+
+`autor` vem de `git config user.name`, com `$GOV_AUTOR` como override. Se
+nenhum dos dois existir, a CLI **falha** em vez de gravar autor vazio: R10 exige
+contribuição individual atribuível. (No repo atual `git config user.name` está
+vazio — configurar é passo do plano.)
+
+## 6. Relações do grafo
+
+Vocabulário fechado, validado pela CLI:
+
+| relação | de → para | serve para responder |
 |---|---|---|
-| `meta` | `M-` | `descricao` |
-| `tarefa` | `T-` | `responsavel`, `prazo`, `status` |
-| `pendencia` | `P-` | `depende_de`, `aberta_em`, `fechada_em` |
-| `decisao` | `D-` | `justificativa`, `alternativas_descartadas`, `status` |
-| `fonte` | `F-` | `origem`, `formato`, `cobertura`, `limitacoes`, `url` |
-| `arquivo` | `A-` | `caminho`, `tipo`, `descricao` |
-| `referencia` | `R-` | `citacao`, `doi_url`, `tipo` |
-| `experimento` | `E-` | `hipotese`, `parametros_json`, `obj`, `gap`, `tempo_s`, `conclusao` |
-| `ia` | `IA-` | `proposito`, `pedido`, `retorno_resumo`, `aceite`, `critica_humana`, `transcricao_path` |
+| `tem` | meta → tarefa | o que está sendo feito por qual objetivo |
+| `atende` | decisao → meta | decisão vinculada a meta (métrica de rastreabilidade) |
+| `usa` | decisao → fonte \| referencia | por que o parâmetro é este, com que base |
+| `produz` | arquivo → arquivo | qual script gerou qual mapa |
+| `justifica` | experimento → decisao | qual rodada sustenta a escolha |
+| `apoia` | experimento → conclusao(arquivo) | conclusão com experimento que a sustenta |
+| `deriva` | arquivo → decisao | arquivo vinculado a decisão (rastreabilidade) |
+| `bloqueia` | pendencia → tarefa \| meta | o que trava o projeto |
+| `informa` | ia → decisao \| arquivo | o que a IA tocou no produto final |
 
-`aresta(origem_id, relacao, destino_id, criado_em, autor)`.
+## 7. Auditoria (§5.7)
 
-Vocabulário fechado de relações: `tem_tarefa`, `usou_fonte`, `produziu`, `apoia`,
-`decorre_de`, `cita`, `bloqueia`, `implementa`. Fechado por escolha: é o que permite
-à auditoria decidir se um nó é órfão sem heurística.
+| grupo | métrica | cálculo |
+|---|---|---|
+| Rastreabilidade | % arquivos com decisão | arquivos com aresta `deriva` / total |
+| | % decisões com meta | decisões com aresta `atende` / total |
+| | nós órfãos | nós sem nenhuma aresta, listados por id |
+| Cadência | registros/semana | `count(evento)` agrupado por `date_trunc('week', ts)` |
+| | commits/semana | `git log --format=%aI` lido pelo motor |
+| | decisões/semana | idem, filtrado por tipo |
+| Higiene | pendências velhas | abertas há > 7 dias |
+| | tarefas incompletas | sem `resp` ou sem `prazo` |
+| Postura crítica | distribuição de aceite | `ia` agrupado por `aceito`, com % de integral |
 
-### 4.1 Constraints que carregam regra de avaliação
+O **selo de auditoria** exibido no site (§5.5.1) é verde só se: zero nós órfãos,
+rastreabilidade de decisões ≥ 90%, nenhuma pendência aberta > 14 dias, e taxa de
+aceite integral < 100%.
 
-- `ia.critica_humana` — `NOT NULL`, mínimo de 40 caracteres. Implementa R6 como
-  constraint, não como convenção.
-- `ia.aceite` — `CHECK IN ('integral','parcial','descarte')`. Alimenta R7.
-- `tarefa.responsavel` e `tarefa.prazo` — `NOT NULL`. Alimenta a métrica de higiene (R9).
-- `decisao.alternativas_descartadas` — `NOT NULL`. O enunciado exige alternativa
-  descartada em toda decisão (§5.3).
+## 8. Site (§5.5)
 
-## 5. CLI `./gov`
+Oito páginas, geradas por `site.py`, HTML estático sem CDN e sem dependência de
+rede (o site é avaliado ao vivo na arguição; falha de CDN não pode derrubá-lo):
 
-Comandos idênticos ao guia rápido de §5.8, mais três:
+1. `index.html` — Estado: metas, próximas ações, últimas decisões, selo
+2. `grafo.html` — grafo executivo em SVG gerado, nós clicáveis
+3. `trilha.html` — linha do tempo de eventos com justificativas
+4. `tarefas.html` — quadro de tarefas e pendências com prazos
+5. `ia.html` — registro completo de IA, taxa de aceite, críticas humanas
+6. `experimentos.html` — tabela de rodadas: parâmetros, obj, gap, tempo
+7. `resultados.html` — mapas, fronteira de implantação, sensibilidade (camada A)
+8. `reprodutibilidade.html` — como rodar do zero
 
-    ./gov meta        "..."
-    ./gov tarefa      "..." --resp NOME --prazo AAAA-MM-DD
-    ./gov decisao     "..." --just "..." --alt "..."
-    ./gov pendencia   "..." --depende-de "..."
-    ./gov fonte       "..." --origem ... --formato ... --cobertura ... --limitacoes ...
-    ./gov ia          --proposito ... --aceito integral|parcial|descarte --critica "..."
-    ./gov experimento --hipotese ... --p chave=valor --obj N --gap N --tempo N
-    ./gov link        D-014 usou_fonte F-003
-    ./gov status
-    ./gov auditoria
-    ./gov update
+O grafo é SVG com layout determinístico calculado em Python (faixas por tipo de
+entidade, ordenação estável por id), com `<a>` em cada nó apontando para a
+âncora do registro, mais ~40 linhas de JS inline para pan/zoom. Determinismo
+importa: dois `./gov update` sobre o mesmo banco produzem byte-a-byte o mesmo
+SVG, então diff de site é sinal, não ruído.
 
-`update` regenera, em ordem: `dump.sql`, grafo, auditoria, painel e as páginas de
-`docs/`. É idempotente: rodar duas vezes produz o mesmo resultado, o que o torna
-seguro dentro do CI.
+## 9. MCP somente-leitura (R9)
 
-## 6. MCP só-leitura
+`mcp_gov.py` expõe ferramentas `consultar(sql)`, `no(id)`, `vizinhos(id)`,
+`auditoria()`. Nenhuma ferramenta de escrita: a escrita passa pelo `./gov` para
+que toda gravação tenha autor humano e passe pelas validações da §5.1.
 
-Servidor local (`governanca/scripts/mcp_server.py`) que expõe consulta SQL ao banco
-para o assistente, sem qualquer caminho de escrita. Implementa R10 literalmente. A
-assimetria é intencional e defensável: a IA pode ler todo o histórico do projeto para
-responder "quais conclusões ainda não têm experimento?", mas nenhum registro entra no
-banco sem um humano tê-lo digitado.
+## 10. Fora de escopo
 
-## 7. Automação local: hooks e agents
+- A camada A em si (formulação, dados OD, solver) — este spec é só a infra que
+  a registra. O `app/` entra aqui apenas como esqueleto e como leitor do banco.
+- Migração do repositório-modelo do professor, caso chegue: o log de eventos é
+  exportável, mas o script de migração só se escreve contra o schema real dele.
 
-### 7.1 Hooks
+## 11. Dependências
 
-| Gatilho | Ação |
-|---|---|
-| pre-commit | `styler` + `lintr` nos `.R` alterados; falha bloqueia o commit |
-| pre-commit | valida sintaxe do `dump.sql` e que ele é append-only em relação a `origin/main` |
-| pre-commit | bloqueia se não há registro novo no banco desde o último commit |
-| pre-push | roda `./gov auditoria`; aviso se surgiu órfão novo |
-
-### 7.2 Agents
-
-| Agent | Função |
-|---|---|
-| `revisor-r` | revisão de código R: correção, estilo, reprodutibilidade |
-| `auditor-governanca` | caça nó órfão, pendência velha, tarefa sem prazo, cadência |
-| `revisor-formulacao` | confere a formulação matemática contra as referências registradas |
-| `interrogador` | faz 3 perguntas duras sobre a saída de IA recebida, para o humano responder |
-
-O `interrogador` existe por uma razão de integridade: gerar a crítica automaticamente
-fraudaria R6, que exige crítica **humana**. O agent não escreve a crítica; ele torna
-difícil registrar "aceito, tudo ok" sem ter entendido. A resposta do humano é que vai
-para `ia.critica_humana`.
-
-## 8. CI (GitHub Actions)
-
-| Job | Falha quando |
-|---|---|
-| `lint-r` | `lintr` acusa problema, ou `styler` mudaria arquivo |
-| `testes-r` | `testthat` falha |
-| `repro` | pipeline não roda de ponta a ponta em máquina limpa (R13) |
-| `governanca` | ID citado no PR não existe no dump; registro de IA sem crítica; taxa de aceite integral acima de 70% no acumulado (aviso a partir de 50%); órfão novo |
-| `revisao-bot` | nunca falha; comenta inline no PR |
-| `publica` | só em `main`: `./gov update`, gera site, publica no Pages |
-
-Branch protection em `main`: 1 aprovação de outro integrante, jobs obrigatórios
-verdes, sem push direto, sem force-push.
-
-Workflow agendado semanal: abre issue se qualquer integrante ficar com zero registros novos no banco na
-semana corrente (defesa antecipada contra R12).
-
-## 9. Site (GitHub Pages)
-
-As 8 seções de §5.5, todas geradas do banco: Estado · Grafo executivo (interativo,
-`vis-network`, clique no nó abre o registro) · Trilha · Tarefas e pendências ·
-Interações com IA (com taxa de aceite e as críticas) · Experimentos · Resultados ·
-Reprodutibilidade.
-
-## 10. Onboarding do grupo
-
-`docs/GUIA-GIT.md`, escrito para quem nunca usou Git: o fluxo branch → commit → PR
-com comandos para copiar, o que fazer em conflito, e a lista do que não fazer
-(commitar em `main`, `git push --force`, aprovar o próprio PR). Mesmo fluxo já em uso
-no repositório da Brendi.
-
-## 11. Fora de escopo
-
-- Formulação, dados e resultados do problema de vertiportos (camada A).
-- Relatório de engenharia e apresentação.
-- Migração a partir do repositório-modelo do professor, se e quando ele chegar
-  (previsto como `migrar.py`, não implementado agora).
-
-## 12. Critério de pronto
-
-1. Repo público na org do grupo, os 4 com acesso de escrita, `main` protegida.
-2. `./gov` grava as 9 entidades e as arestas; `./gov update` regenera tudo.
-3. Site no ar no GitHub Pages com as 8 seções, alimentado pelo banco.
-4. CI verde num PR de teste; PR sem registro citado é reprovado pelo CI.
-5. Hooks e 4 agents instalados e funcionando.
-6. `docs/GUIA-GIT.md` e `README.md` permitem a terceiro clonar e operar sem ajuda.
+`governanca/requirements.txt`: `duckdb`, `pytest`. Nada mais — stdlib para
+templates, HTML, SVG e JSON. Menos dependência é mais reprodutibilidade (R11),
+e o grupo tem 4 máquinas para manter iguais.

@@ -6,3 +6,9 @@ dados/bruto/*
 relatorio/*_files/
 relatorio/*.html
 .DS_Store
+governanca/.venv/
+governanca/projeto.duckdb
+governanca/projeto.duckdb.wal
+governanca/site/
+__pycache__/
+.pytest_cache/
