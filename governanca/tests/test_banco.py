@@ -21,6 +21,29 @@ class _ConexaoComFalhaNoInsert:
         return self._real.execute(stmt, *a, **kw)
 
 
+class _CaminhoComFalhaNoAppend:
+    def __init__(self, real):
+        self._real = real
+
+    def exists(self):
+        return self._real.exists()
+
+    def stat(self):
+        return self._real.stat()
+
+    @property
+    def parent(self):
+        return self._real.parent
+
+    def open(self, mode="r", encoding=None):
+        if mode == "a":
+            raise OSError("falha simulada no append")
+        return self._real.open(mode, encoding=encoding)
+
+    def read_text(self):
+        return self._real.read_text()
+
+
 def test_novo_id_tem_prefixo_e_seis_chars():
     i = banco.novo_id("dec")
     assert i.startswith("dec-")
@@ -110,6 +133,7 @@ def test_autor_atual_usa_env(monkeypatch):
 
 def test_dump_sobrevive_a_falha_no_banco(tmp_repo):
     eid = banco.novo_id("dec")
+    antes = banco.DUMP.read_text() if banco.DUMP.exists() else ""
     proxy = _ConexaoComFalhaNoInsert(banco.conecta())
     original_conecta = banco.conecta
     banco.conecta = lambda somente_leitura=False: proxy
@@ -118,12 +142,12 @@ def test_dump_sobrevive_a_falha_no_banco(tmp_repo):
             banco.registra("decisao", eid, {"titulo": "T", "just": "J"}, autor="G")
     finally:
         banco.conecta = original_conecta
-    assert "INSERT INTO evento" in banco.DUMP.read_text()
-    banco.rebuild()
-    con2 = banco.conecta()
-    assert con2.execute(
+    depois = banco.DUMP.read_text() if banco.DUMP.exists() else ""
+    assert depois == antes
+    con = banco.conecta()
+    assert con.execute(
         "SELECT titulo FROM decisao WHERE id = ?", [eid]
-    ).fetchone() == ("T",)
+    ).fetchone() is None
 
 
 def test_dump_continua_append_only_apos_falha(tmp_repo):
@@ -138,8 +162,44 @@ def test_dump_continua_append_only_apos_falha(tmp_repo):
     finally:
         banco.conecta = original_conecta
     depois = banco.DUMP.read_text()
-    assert depois.startswith(antes)
-    assert depois.count("INSERT INTO evento") == 2
+    assert depois == antes
+    assert depois.count("INSERT INTO evento") == 1
+
+
+def test_colisao_de_evento_id_nao_deixa_rastro(tmp_repo, monkeypatch):
+    real_novo_id = banco.novo_id
+    monkeypatch.setattr(banco, "novo_id",
+                        lambda prefixo: "evt-fixado" if prefixo == "evt"
+                        else real_novo_id(prefixo))
+    eid1 = banco.novo_id("dec")
+    banco.registra("decisao", eid1, {"titulo": "Primeiro", "just": "J"}, autor="G")
+    antes = banco.DUMP.read_text()
+    eid2 = banco.novo_id("dec")
+    with pytest.raises(duckdb.Error):
+        banco.registra("decisao", eid2, {"titulo": "Segundo", "just": "J2"}, autor="G")
+    depois = banco.DUMP.read_text()
+    assert depois == antes
+    con = banco.conecta()
+    assert con.execute(
+        "SELECT titulo FROM decisao WHERE id = ?", [eid2]
+    ).fetchone() is None
+    assert con.execute("SELECT count(*) FROM evento").fetchone() == (1,)
+
+
+def test_falha_no_append_do_dump_desfaz_o_banco(tmp_repo, monkeypatch):
+    eid = banco.novo_id("tar")
+    caminho_real = banco.DUMP
+    monkeypatch.setattr(banco, "DUMP", _CaminhoComFalhaNoAppend(caminho_real))
+    with pytest.raises(OSError):
+        banco.registra("tarefa", eid, {"titulo": "X", "resp": "Ana",
+                                       "status": "aberta"}, autor="G")
+    monkeypatch.setattr(banco, "DUMP", caminho_real)
+    assert not banco.DUMP.exists()
+    con = banco.conecta()
+    assert con.execute(
+        "SELECT status FROM tarefa WHERE id = ?", [eid]
+    ).fetchone() is None
+    assert con.execute("SELECT count(*) FROM evento").fetchone() == (0,)
 
 
 def test_conecta_somente_leitura_apos_escrita_nao_e_gravavel(tmp_repo):

@@ -83,6 +83,8 @@ def conecta(somente_leitura=False):
     if _CON is None or _CON_SOMENTE_LEITURA != somente_leitura:
         if _CON is not None:
             _CON.close()
+        _CON = None
+        _CON_SOMENTE_LEITURA = None
         DB.parent.mkdir(parents=True, exist_ok=True)
         _CON = duckdb.connect(str(DB), read_only=somente_leitura)
         if not somente_leitura:
@@ -108,9 +110,21 @@ def registra(tipo, entidade_id, payload, autor=None, ts=None):
     stmt = "INSERT INTO evento VALUES (" + ", ".join(valores) + ");"
     con = conecta()
     DUMP.parent.mkdir(parents=True, exist_ok=True)
-    with DUMP.open("a", encoding="utf-8") as fh:
-        fh.write(stmt + "\n")
-    con.execute(stmt)
+    tamanho_antes = DUMP.stat().st_size if DUMP.exists() else 0
+    con.execute("BEGIN TRANSACTION")
+    try:
+        con.execute(stmt)
+        with DUMP.open("a", encoding="utf-8") as fh:
+            fh.write(stmt + "\n")
+            fh.flush()
+            os.fsync(fh.fileno())
+        con.execute("COMMIT")
+    except Exception:
+        con.execute("ROLLBACK")
+        if DUMP.exists():
+            with DUMP.open("r+", encoding="utf-8") as fh:
+                fh.truncate(tamanho_antes)
+        raise
     os.utime(DB, None)
     return evento_id
 
