@@ -104,6 +104,11 @@ def cmd_ia(a):
     return 0
 
 
+def _tipo_de(con, entidade_id):
+    return con.execute("SELECT tipo FROM no WHERE entidade_id = ?",
+                       [entidade_id]).fetchone()[0]
+
+
 def cmd_liga(a):
     if a.relacao not in banco.RELACOES:
         raise SystemExit(f"gov: relacao invalida: {a.relacao}. "
@@ -113,6 +118,18 @@ def cmd_liga(a):
         destino = banco.resolve(a.destino)
     except ValueError as exc:
         return _erro(str(exc))
+    con = banco.conecta()
+    tipos_origem, tipos_destino = banco.RELACOES[a.relacao]
+    tipo_origem = _tipo_de(con, origem)
+    tipo_destino = _tipo_de(con, destino)
+    if tipo_origem not in tipos_origem:
+        return _erro(f"relacao '{a.relacao}' exige origem do tipo "
+                     f"{'/'.join(sorted(tipos_origem))}, mas {origem} e "
+                     f"do tipo {tipo_origem}")
+    if tipo_destino not in tipos_destino:
+        return _erro(f"relacao '{a.relacao}' exige destino do tipo "
+                     f"{'/'.join(sorted(tipos_destino))}, mas {destino} e "
+                     f"do tipo {tipo_destino}")
     banco.registra("aresta", origem,
                    {"relacao": a.relacao, "destino": destino})
     return 0

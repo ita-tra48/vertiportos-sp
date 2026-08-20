@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -71,6 +72,59 @@ def test_cadencia_agrupa_por_semana(cenario):
     assert sum(n for _, n in c["registros_semana"]) == 7
 
 
-def test_selo_verde_quando_taxa_integral_e_cem_reprova(cenario):
-    m = auditoria.calcula(cenario)
-    assert m["selo"][0] in ("verde", "vermelho")
+def test_rastreabilidade_ignora_aresta_atende_para_decisao(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("decisao", "Recorte metropolitano", "--just", "porque X")
+    roda("decisao", "Valor do tempo", "--just", "porque Y")
+    con = banco.conecta()
+    d1, d2 = [r[0] for r in con.execute(
+        "SELECT id FROM decisao ORDER BY id").fetchall()]
+    banco.registra("aresta", d1, {"relacao": "atende", "destino": d2})
+    r = auditoria.rastreabilidade(banco.conecta())
+    assert r["decisoes_com_meta"] == pytest.approx(0.0)
+
+
+@pytest.fixture
+def saudavel(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("meta", "Localizar vertiportos")
+    roda("decisao", "Recorte metropolitano", "--just", "porque X")
+    con = banco.conecta()
+    met = con.execute("SELECT id FROM meta").fetchone()[0]
+    dec = con.execute("SELECT id FROM decisao").fetchone()[0]
+    roda("liga", dec, "atende", met)
+    return con
+
+
+def test_selo_verde_sem_motivos(saudavel):
+    m = auditoria.calcula(saudavel)
+    assert m["selo"] == ("verde", [])
+
+
+def test_selo_vermelho_quando_taxa_integral_e_cem(saudavel, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    con = saudavel
+    dec = con.execute("SELECT id FROM decisao").fetchone()[0]
+    roda("ia", "--proposito", "codigo", "--aceito", "integral",
+         "--critica", "conferi linha a linha antes de aceitar o trecho")
+    ia = con.execute("SELECT id FROM ia").fetchone()[0]
+    roda("liga", ia, "informa", dec)
+    m = auditoria.calcula(banco.conecta())
+    assert m["selo"][0] == "vermelho"
+    assert any("aceite integral em 100%" in motivo for motivo in m["selo"][1])
+    assert len(m["selo"][1]) >= 1
+
+
+def test_higiene_indice_de_dias_aciona_o_selo(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    ts_antigo = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=20)
+    banco.registra("pendencia", banco.novo_id("pen"),
+                   {"titulo": "Confirmar cobertura", "status": "aberta"},
+                   ts=ts_antigo)
+    con = banco.conecta()
+    h = auditoria.higiene(con)
+    assert len(h["pendencias_velhas"]) == 1
+    assert h["pendencias_velhas"][0][3] > auditoria.LIMITE_SELO_DIAS
+    m = auditoria.calcula(con)
+    assert m["selo"][0] == "vermelho"
+    assert any("pendencia" in motivo for motivo in m["selo"][1])

@@ -24,11 +24,13 @@ def rastreabilidade(con):
         "SELECT count(*) FROM arquivo").fetchone()[0]
     arq_ok = con.execute(
         "SELECT count(DISTINCT origem) FROM aresta WHERE relacao = 'deriva' "
-        "AND origem IN (SELECT id FROM arquivo)").fetchone()[0]
+        "AND origem IN (SELECT id FROM arquivo) "
+        "AND destino IN (SELECT id FROM decisao)").fetchone()[0]
     dec_total = con.execute("SELECT count(*) FROM decisao").fetchone()[0]
     dec_ok = con.execute(
         "SELECT count(DISTINCT origem) FROM aresta WHERE relacao = 'atende' "
-        "AND origem IN (SELECT id FROM decisao)").fetchone()[0]
+        "AND origem IN (SELECT id FROM decisao) "
+        "AND destino IN (SELECT id FROM meta)").fetchone()[0]
     orfaos = _orfaos(con)
     return {"arquivos_com_decisao": _pct(arq_ok, arq_total),
             "decisoes_com_meta": _pct(dec_ok, dec_total),

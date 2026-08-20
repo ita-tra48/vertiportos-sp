@@ -19,8 +19,17 @@ PREFIXOS = {"meta": "met", "tarefa": "tar", "pendencia": "pen",
             "decisao": "dec", "fonte": "fon", "arquivo": "arq",
             "referencia": "ref", "experimento": "exp", "ia": "ia"}
 
-RELACOES = frozenset({"tem", "atende", "usa", "produz", "justifica",
-                      "apoia", "deriva", "bloqueia", "informa"})
+RELACOES = {
+    "tem": ({"meta"}, {"tarefa"}),
+    "atende": ({"decisao"}, {"meta"}),
+    "usa": ({"decisao"}, {"fonte", "referencia"}),
+    "produz": ({"arquivo"}, {"arquivo"}),
+    "justifica": ({"experimento"}, {"decisao"}),
+    "apoia": ({"experimento"}, {"arquivo"}),
+    "deriva": ({"arquivo"}, {"decisao"}),
+    "bloqueia": ({"pendencia"}, {"tarefa", "meta"}),
+    "informa": ({"ia"}, {"decisao", "arquivo"}),
+}
 
 _ALFABETO = "0123456789abcdefghijklmnopqrstuvwxyz"
 _CON = None
