@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import duckdb
@@ -63,11 +64,27 @@ def test_rebuild_reconstroi_do_dump(tmp_repo):
 
 
 def test_ultimo_evento_ganha(tmp_repo):
+    con = banco.conecta()
+    for _ in range(30):
+        eid = banco.novo_id("tar")
+        banco.registra("tarefa", eid, {"titulo": "X", "resp": "Ana",
+                                       "status": "aberta"}, autor="G")
+        banco.registra("tarefa", eid, {"titulo": "X", "resp": "Ana",
+                                       "status": "feita"}, autor="G")
+        assert con.execute(
+            "SELECT status FROM tarefa WHERE id = ?", [eid]
+        ).fetchone() == ("feita",)
+
+
+def test_ultimo_evento_ganha_com_ts_explicito_no_mesmo_segundo(tmp_repo):
     eid = banco.novo_id("tar")
+    base = datetime(2026, 1, 1, 12, 0, 0)
     banco.registra("tarefa", eid, {"titulo": "X", "resp": "Ana",
-                                   "status": "aberta"}, autor="G")
+                                   "status": "aberta"}, autor="G",
+                   ts=base.replace(microsecond=1))
     banco.registra("tarefa", eid, {"titulo": "X", "resp": "Ana",
-                                   "status": "feita"}, autor="G")
+                                   "status": "feita"}, autor="G",
+                   ts=base.replace(microsecond=2))
     con = banco.conecta()
     assert con.execute("SELECT status FROM tarefa WHERE id = ?", [eid]).fetchone() == (
         "feita",

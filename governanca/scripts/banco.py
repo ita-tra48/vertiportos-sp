@@ -99,7 +99,7 @@ def registra(tipo, entidade_id, payload, autor=None, ts=None):
     if tipo not in TIPOS:
         raise ValueError(f"tipo desconhecido: {tipo}")
     autor = autor or autor_atual()
-    ts = ts or datetime.now(timezone.utc).replace(tzinfo=None, microsecond=0)
+    ts = ts or datetime.now(timezone.utc).replace(tzinfo=None)
     evento_id = novo_id("evt")
     corpo = json.dumps(payload, ensure_ascii=False, sort_keys=True)
     valores = [_sql_literal(evento_id), _sql_literal(ts.isoformat(sep=" ")),
