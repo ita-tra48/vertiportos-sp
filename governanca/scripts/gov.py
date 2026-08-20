@@ -2,6 +2,7 @@ import argparse
 import json
 import sys
 
+import auditoria
 import banco
 
 MIN_CRITICA = 20
@@ -169,10 +170,7 @@ def cmd_consulta(a):
 
 
 def _orfaos(con):
-    return [r[0] for r in con.execute(
-        "SELECT entidade_id FROM no n WHERE NOT EXISTS "
-        "(SELECT 1 FROM aresta a WHERE a.origem = n.entidade_id "
-        "OR a.destino = n.entidade_id) ORDER BY entidade_id").fetchall()]
+    return auditoria._orfaos(con)
 
 
 def cmd_status(a):
@@ -204,6 +202,26 @@ def cmd_status(a):
 def cmd_rebuild(a):
     banco.rebuild()
     print("banco reconstruido a partir de governanca/dump.sql")
+    return 0
+
+
+def cmd_auditoria(a):
+    m = auditoria.calcula(banco.conecta())
+    r, h, p = m["rastreabilidade"], m["higiene"], m["postura"]
+    print(f"selo: {m['selo'][0].upper()}")
+    for motivo in m["selo"][1]:
+        print(f"  - {motivo}")
+    print(f"\nrastreabilidade: arquivos com decisao {r['arquivos_com_decisao']}% "
+          f"({r['arquivos_total']}) | decisoes com meta "
+          f"{r['decisoes_com_meta']}% ({r['decisoes_total']}) | "
+          f"orfaos {len(r['orfaos'])}")
+    print(f"postura critica: integral {p['integral']} parcial {p['parcial']} "
+          f"descarte {p['descarte']} | taxa integral {p['taxa_integral']}%")
+    print(f"higiene: pendencias velhas {len(h['pendencias_velhas'])} | "
+          f"tarefas incompletas {len(h['tarefas_incompletas'])}")
+    print("\ncadencia (registros por semana):")
+    for semana, n in m["cadencia"]["registros_semana"]:
+        print(f"  {semana}: {n}")
     return 0
 
 
@@ -297,6 +315,9 @@ def constroi_parser():
 
     s = sub.add_parser("rebuild")
     s.set_defaults(func=cmd_rebuild)
+
+    s = sub.add_parser("auditoria")
+    s.set_defaults(func=cmd_auditoria)
 
     return p
 
