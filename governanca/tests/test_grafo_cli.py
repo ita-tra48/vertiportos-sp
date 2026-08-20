@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+import duckdb
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -79,9 +80,45 @@ def test_consulta_select_funciona(semeado, capsys):
     assert "1" in capsys.readouterr().out
 
 
+def test_consulta_recusa_leitura_de_arquivo(semeado, tmp_repo, capsys):
+    alvo = tmp_repo / "governanca" / "schemas" / "schema.sql"
+    with pytest.raises(duckdb.Error):
+        roda("consulta", f"SELECT * FROM read_text('{alvo}')")
+    assert "CREATE TABLE" not in capsys.readouterr().out
+
+
+def test_consulta_recusa_glob(semeado):
+    with pytest.raises(duckdb.Error):
+        roda("consulta", "SELECT * FROM glob('*')")
+
+
+def test_registra_e_rebuild_funcionam_apos_consulta(semeado, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("consulta", "SELECT count(*) FROM decisao")
+    assert roda("pendencia", "Confirmar cobertura de dados") == 0
+    con = banco.conecta()
+    assert con.execute("SELECT count(*) FROM pendencia").fetchone() == (1,)
+    assert roda("rebuild") == 0
+
+
 def test_status_lista_orfaos(semeado, capsys):
     met, dec = semeado
+    roda("liga", dec, "atende", met)
+    roda("pendencia", "Confirmar cobertura de dados")
+    con = banco.conecta()
+    pen = con.execute("SELECT id FROM pendencia").fetchone()[0]
     roda("status")
     saida = capsys.readouterr().out
     assert "orfaos" in saida.lower()
-    assert dec in saida or "2" in saida
+    assert met not in saida
+    assert dec not in saida
+    assert pen in saida
+
+
+def test_orfaos_ignora_null_de_aresta_malformada(semeado):
+    met, dec = semeado
+    banco.registra("aresta", dec, {"relacao": "atende", "destino": None})
+    con = banco.conecta()
+    orfaos = gov._orfaos(con)
+    assert met in orfaos
+    assert dec not in orfaos

@@ -158,7 +158,8 @@ def cmd_consulta(a):
         raise SystemExit("gov: consulta aceita apenas SELECT ou WITH")
     if ";" in sql:
         raise SystemExit("gov: um statement por consulta")
-    con = banco.conecta()
+    con = banco.conecta(somente_leitura=True)
+    con.execute("SET enable_external_access = false")
     cur = con.execute(sql)
     colunas = [d[0] for d in cur.description]
     print(" | ".join(colunas))
@@ -169,9 +170,9 @@ def cmd_consulta(a):
 
 def _orfaos(con):
     return [r[0] for r in con.execute(
-        "SELECT entidade_id FROM no WHERE entidade_id NOT IN "
-        "(SELECT origem FROM aresta UNION SELECT destino FROM aresta) "
-        "ORDER BY entidade_id").fetchall()]
+        "SELECT entidade_id FROM no n WHERE NOT EXISTS "
+        "(SELECT 1 FROM aresta a WHERE a.origem = n.entidade_id "
+        "OR a.destino = n.entidade_id) ORDER BY entidade_id").fetchall()]
 
 
 def cmd_status(a):
