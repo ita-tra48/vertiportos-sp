@@ -1,4 +1,6 @@
 import json
+import os
+import shutil
 from html import escape
 from pathlib import Path
 
@@ -107,15 +109,15 @@ def _index(con, m):
         f'<div class="cartao"><b>{len(h["tarefas_incompletas"])}</b>'
         f'<span>tarefas incompletas</span></div></div>')
     metas = _tabela(["id", "meta", "status", "criada por"], con.execute(
-        "SELECT id, titulo, status, criado_por FROM meta ORDER BY criado_em"
+        "SELECT id, titulo, status, criado_por FROM meta ORDER BY criado_em, id"
     ).fetchall())
     acoes = _tabela(["prazo", "tarefa", "resp"], con.execute(
         "SELECT prazo, titulo, resp FROM tarefa WHERE status = 'aberta' "
-        "ORDER BY prazo NULLS LAST LIMIT 10").fetchall())
+        "ORDER BY prazo NULLS LAST, id LIMIT 10").fetchall())
     decisoes = _tabela(["quando", "decisao", "justificativa", "autor"],
                        con.execute(
         "SELECT criado_em, titulo, justificativa, criado_por FROM decisao "
-        "ORDER BY criado_em DESC LIMIT 8").fetchall())
+        "ORDER BY criado_em DESC, id DESC LIMIT 8").fetchall())
     return (f'<p>Selo de auditoria: <span class="selo {cor}">{cor.upper()}'
             f'</span></p><ul>{lista}</ul>{cartoes}'
             f'<h2>Metas</h2>{metas}<h2>Proximas acoes</h2>{acoes}'
@@ -143,11 +145,11 @@ def _tarefas(con):
     tarefas = _tabela(["id", "tarefa", "resp", "prazo", "status"],
                       con.execute(
         "SELECT id, titulo, resp, prazo, status FROM tarefa "
-        "ORDER BY status, prazo NULLS LAST").fetchall())
+        "ORDER BY status, prazo NULLS LAST, id").fetchall())
     pendencias = _tabela(["id", "pendencia", "aberta em", "status", "resolucao"],
                          con.execute(
         "SELECT id, titulo, criado_em, status, resolucao FROM pendencia "
-        "ORDER BY status, criado_em").fetchall())
+        "ORDER BY status, criado_em, id").fetchall())
     return f"{tarefas}<h2>Pendencias</h2>{pendencias}"
 
 
@@ -165,7 +167,7 @@ def _ia(con, m):
     tabela = _tabela(
         ["quando", "quem", "proposito", "modelo", "aceito", "critica humana"],
         con.execute("SELECT criado_em, criado_por, proposito, modelo, aceito, "
-                    "critica FROM ia ORDER BY criado_em DESC").fetchall())
+                    "critica FROM ia ORDER BY criado_em DESC, id DESC").fetchall())
     return (f'{cartoes}<p>Taxa proxima de 100% nao e eficiencia: e ausencia de '
             f'revisao (enunciado 5.6.3).</p><h2>Registros</h2>{tabela}')
 
@@ -176,19 +178,19 @@ def _experimentos(con):
          "hipotese", "conclusao"],
         con.execute("SELECT id, variante, parametros, obj, gap, tempo_s, "
                     "commit_sha, hipotese, conclusao FROM experimento "
-                    "ORDER BY criado_em").fetchall())
+                    "ORDER BY criado_em, id").fetchall())
 
 
 def _resultados(con):
     arquivos = _tabela(["id", "arquivo", "descricao"], con.execute(
-        "SELECT id, caminho, descricao FROM arquivo ORDER BY caminho"
+        "SELECT id, caminho, descricao FROM arquivo ORDER BY caminho, id"
     ).fetchall())
     fontes = _tabela(["fonte", "origem", "formato", "cobertura", "limitacoes"],
                      con.execute(
         "SELECT nome, origem, formato, cobertura, limitacoes FROM fonte "
-        "ORDER BY nome").fetchall())
+        "ORDER BY nome, id").fetchall())
     refs = _tabela(["citacao", "url", "doi"], con.execute(
-        "SELECT citacao, url, doi FROM referencia ORDER BY citacao").fetchall())
+        "SELECT citacao, url, doi FROM referencia ORDER BY citacao, id").fetchall())
     return (f'<p>Mapas, fronteira de implantacao e sensibilidade entram aqui '
             f'quando a camada A produzir os artefatos, registrados via '
             f'<code>./gov arquivo</code>.</p><h2>Artefatos</h2>{arquivos}'
@@ -212,7 +214,7 @@ def _reprodutibilidade():
 
 def gera(destino=None):
     destino = Path(destino) if destino else DESTINO
-    destino.mkdir(parents=True, exist_ok=True)
+    destino.parent.mkdir(parents=True, exist_ok=True)
     con = banco.conecta()
     m = auditoria.calcula(con)
     corpos = {
@@ -227,10 +229,31 @@ def gera(destino=None):
         "resultados.html": _resultados(con),
         "reprodutibilidade.html": _reprodutibilidade(),
     }
-    for arquivo, titulo in PAGINAS:
-        extra = PAN if arquivo == "grafo.html" else ""
-        (destino / arquivo).write_text(
-            _pagina(arquivo, titulo, corpos[arquivo], extra), encoding="utf-8")
-    (destino / "estilo.css").write_text(ESTILO, encoding="utf-8")
-    (destino / ".nojekyll").write_text("", encoding="utf-8")
+    tmp = destino.parent / f".{destino.name}.tmp"
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir(parents=True)
+    try:
+        for arquivo, titulo in PAGINAS:
+            extra = PAN if arquivo == "grafo.html" else ""
+            (tmp / arquivo).write_text(
+                _pagina(arquivo, titulo, corpos[arquivo], extra), encoding="utf-8")
+        (tmp / "estilo.css").write_text(ESTILO, encoding="utf-8")
+        (tmp / ".nojekyll").write_text("", encoding="utf-8")
+    except Exception:
+        shutil.rmtree(tmp, ignore_errors=True)
+        raise
+    velho = destino.parent / f".{destino.name}.velho"
+    if velho.exists():
+        shutil.rmtree(velho)
+    if destino.exists():
+        os.replace(destino, velho)
+    try:
+        os.replace(tmp, destino)
+    except Exception:
+        if velho.exists():
+            os.replace(velho, destino)
+        raise
+    if velho.exists():
+        shutil.rmtree(velho, ignore_errors=True)
     return destino

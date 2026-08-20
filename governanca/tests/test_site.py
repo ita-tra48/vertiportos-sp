@@ -93,3 +93,48 @@ def test_update_gera_site(cenario, monkeypatch):
                         cenario / "governanca" / "site")
     assert roda("update") == 0
     assert (cenario / "governanca" / "site" / "index.html").exists()
+
+
+def _quebra_na_quarta_pagina(monkeypatch):
+    original = Path.write_text
+    alvo = site_gov.PAGINAS[3][0]
+
+    def falha(self, *args, **kwargs):
+        if self.name == alvo:
+            raise OSError("disco cheio (simulado)")
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", falha)
+
+
+def test_gera_e_atomica_sem_site_anterior(cenario, monkeypatch):
+    destino = cenario / "governanca" / "site"
+    _quebra_na_quarta_pagina(monkeypatch)
+    with pytest.raises(OSError):
+        site_gov.gera(destino)
+    assert not destino.exists()
+    irmaos = {p.name for p in destino.parent.iterdir()}
+    assert not any(n.startswith(".site") for n in irmaos)
+
+
+def test_gera_e_atomica_com_site_anterior(cenario, monkeypatch):
+    destino = cenario / "governanca" / "site"
+    site_gov.gera(destino)
+    anterior = {p.name: p.read_text() for p in sorted(destino.glob("*"))
+                if p.is_file()}
+
+    _quebra_na_quarta_pagina(monkeypatch)
+    with pytest.raises(OSError):
+        site_gov.gera(destino)
+
+    atual = {p.name: p.read_text() for p in sorted(destino.glob("*"))
+             if p.is_file()}
+    assert atual == anterior
+    irmaos = {p.name for p in destino.parent.iterdir()}
+    assert not any(n.startswith(".site") for n in irmaos)
+
+
+def test_gera_normal_produz_css_e_nojekyll(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    nomes = {p.name for p in destino.iterdir()}
+    assert {a for a, _ in site_gov.PAGINAS} | {"estilo.css", ".nojekyll"} <= nomes
