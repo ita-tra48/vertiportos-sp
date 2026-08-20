@@ -17,7 +17,12 @@ def _pares(lista):
         if "=" not in item:
             raise SystemExit(f"gov: parametro sem '=': {item}")
         chave, valor = item.split("=", 1)
-        saida[chave.strip()] = valor.strip()
+        chave = chave.strip()
+        if not chave:
+            raise SystemExit(f"gov: parametro com chave vazia: {item}")
+        if chave in saida:
+            raise SystemExit(f"gov: parametro duplicado: {chave}")
+        saida[chave] = valor.strip()
     return saida
 
 
@@ -67,11 +72,21 @@ def cmd_referencia(a):
 
 
 def cmd_experimento(a):
+    numeros = {}
+    for nome in ("obj", "gap", "tempo"):
+        bruto = getattr(a, nome)
+        if bruto is None:
+            numeros[nome] = None
+            continue
+        try:
+            numeros[nome] = float(bruto)
+        except ValueError:
+            return _erro(f"valor numerico invalido para --{nome}: {bruto}")
     banco.registra("experimento", banco.novo_id("exp"),
                    {"variante": a.variante, "p": _pares(a.p),
-                    "commit": a.commit, "obj": a.obj, "gap": a.gap,
-                    "tempo": a.tempo, "hipotese": a.hipotese,
-                    "conclusao": a.conclusao})
+                    "commit": a.commit, "obj": numeros["obj"],
+                    "gap": numeros["gap"], "tempo": numeros["tempo"],
+                    "hipotese": a.hipotese, "conclusao": a.conclusao})
     return 0
 
 

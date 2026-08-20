@@ -75,6 +75,36 @@ def test_experimento_guarda_parametros(tmp_repo, monkeypatch):
     assert '"p":"8"' in parametros.replace(" ", "")
 
 
+def test_experimento_obj_invalido_e_recusada(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    assert roda("experimento", "--variante", "cobertura",
+                "--obj", "12,345") == 2
+    con = banco.conecta()
+    assert con.execute("SELECT count(*) FROM evento").fetchone() == (0,)
+
+
+def test_experimento_sem_numeros_grava(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    assert roda("experimento", "--variante", "cobertura") == 0
+    con = banco.conecta()
+    obj = con.execute("SELECT obj FROM experimento").fetchone()[0]
+    assert obj is None
+
+
+def test_pares_chave_vazia_e_recusada():
+    with pytest.raises(SystemExit):
+        gov._pares(["=5"])
+
+
+def test_pares_chave_duplicada_e_recusada():
+    with pytest.raises(SystemExit):
+        gov._pares(["p=1", "p=2"])
+
+
+def test_pares_valor_com_igual_e_preservado():
+    assert gov._pares(["formula=a=b"]) == {"formula": "a=b"}
+
+
 def test_decisao_com_alternativas_multiplas(tmp_repo, monkeypatch):
     monkeypatch.setenv("GOV_AUTOR", "Gustavo")
     assert roda("decisao", "Formulacao p-mediana", "--just", "porque X",
