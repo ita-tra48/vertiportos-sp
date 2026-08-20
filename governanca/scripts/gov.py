@@ -242,6 +242,13 @@ def cmd_auditoria(a):
     return 0
 
 
+def cmd_update(a):
+    import site_gov
+    destino = site_gov.gera()
+    print(f"site gerado em {destino}")
+    return cmd_auditoria(a)
+
+
 def constroi_parser():
     p = argparse.ArgumentParser(prog="gov")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -335,6 +342,9 @@ def constroi_parser():
 
     s = sub.add_parser("auditoria")
     s.set_defaults(func=cmd_auditoria)
+
+    s = sub.add_parser("update")
+    s.set_defaults(func=cmd_update)
 
     return p
 
