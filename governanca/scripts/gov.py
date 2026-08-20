@@ -1,4 +1,5 @@
 import argparse
+import json
 import sys
 
 import banco
@@ -102,6 +103,109 @@ def cmd_ia(a):
     return 0
 
 
+def cmd_liga(a):
+    if a.relacao not in banco.RELACOES:
+        raise SystemExit(f"gov: relacao invalida: {a.relacao}. "
+                         f"validas: {', '.join(sorted(banco.RELACOES))}")
+    try:
+        origem = banco.resolve(a.origem)
+        destino = banco.resolve(a.destino)
+    except ValueError as exc:
+        return _erro(str(exc))
+    banco.registra("aresta", origem,
+                   {"relacao": a.relacao, "destino": destino})
+    return 0
+
+
+def _payload_atual(entidade_id):
+    con = banco.conecta()
+    linha = con.execute(
+        "SELECT tipo, payload FROM no WHERE entidade_id = ?",
+        [entidade_id]).fetchone()
+    if linha is None:
+        raise ValueError(f"sem registro para {entidade_id}")
+    return linha[0], json.loads(linha[1])
+
+
+def cmd_fecha(a):
+    try:
+        entidade_id = banco.resolve(a.id)
+        tipo, payload = _payload_atual(entidade_id)
+    except ValueError as exc:
+        return _erro(str(exc))
+    payload["status"] = {"tarefa": "feita", "pendencia": "resolvida",
+                         "meta": "concluida"}.get(tipo, "encerrada")
+    if a.resolucao:
+        payload["resolucao"] = a.resolucao
+    banco.registra(tipo, entidade_id, payload)
+    return 0
+
+
+def cmd_patch(a):
+    try:
+        entidade_id = banco.resolve(a.id)
+        tipo, payload = _payload_atual(entidade_id)
+    except ValueError as exc:
+        return _erro(str(exc))
+    payload.update(_pares(a.campos))
+    banco.registra(tipo, entidade_id, payload)
+    return 0
+
+
+def cmd_consulta(a):
+    sql = a.sql.strip().rstrip(";")
+    if not sql.lower().startswith(("select", "with")):
+        raise SystemExit("gov: consulta aceita apenas SELECT ou WITH")
+    if ";" in sql:
+        raise SystemExit("gov: um statement por consulta")
+    con = banco.conecta()
+    cur = con.execute(sql)
+    colunas = [d[0] for d in cur.description]
+    print(" | ".join(colunas))
+    for linha in cur.fetchall():
+        print(" | ".join("" if v is None else str(v) for v in linha))
+    return 0
+
+
+def _orfaos(con):
+    return [r[0] for r in con.execute(
+        "SELECT entidade_id FROM no WHERE entidade_id NOT IN "
+        "(SELECT origem FROM aresta UNION SELECT destino FROM aresta) "
+        "ORDER BY entidade_id").fetchall()]
+
+
+def cmd_status(a):
+    con = banco.conecta()
+    print("== estado do banco ==")
+    for tipo in banco.PREFIXOS:
+        n = con.execute("SELECT count(*) FROM no WHERE tipo = ?",
+                        [tipo]).fetchone()[0]
+        print(f"{tipo:>12}: {n}")
+    arestas = con.execute("SELECT count(*) FROM aresta").fetchone()[0]
+    print(f"{'arestas':>12}: {arestas}")
+    orfaos = _orfaos(con)
+    print(f"\nnos orfaos: {len(orfaos)}")
+    for oid in orfaos:
+        titulo = con.execute(
+            "SELECT coalesce(payload->>'titulo', payload->>'variante', "
+            "payload->>'proposito') FROM no WHERE entidade_id = ?",
+            [oid]).fetchone()[0]
+        print(f"  {oid}  {titulo}")
+    abertas = con.execute(
+        "SELECT id, titulo, resp, prazo FROM tarefa WHERE status = 'aberta' "
+        "ORDER BY prazo NULLS LAST").fetchall()
+    print(f"\ntarefas abertas: {len(abertas)}")
+    for tid, titulo, resp, prazo in abertas:
+        print(f"  {tid}  {titulo}  [{resp}]  {prazo or 'sem prazo'}")
+    return 0
+
+
+def cmd_rebuild(a):
+    banco.rebuild()
+    print("banco reconstruido a partir de governanca/dump.sql")
+    return 0
+
+
 def constroi_parser():
     p = argparse.ArgumentParser(prog="gov")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -166,6 +270,32 @@ def constroi_parser():
     s.add_argument("--pedido")
     s.add_argument("--retorno")
     s.set_defaults(func=cmd_ia)
+
+    s = sub.add_parser("liga")
+    s.add_argument("origem")
+    s.add_argument("relacao")
+    s.add_argument("destino")
+    s.set_defaults(func=cmd_liga)
+
+    s = sub.add_parser("fecha")
+    s.add_argument("id")
+    s.add_argument("--resolucao")
+    s.set_defaults(func=cmd_fecha)
+
+    s = sub.add_parser("patch")
+    s.add_argument("id")
+    s.add_argument("campos", nargs="+")
+    s.set_defaults(func=cmd_patch)
+
+    s = sub.add_parser("consulta")
+    s.add_argument("sql")
+    s.set_defaults(func=cmd_consulta)
+
+    s = sub.add_parser("status")
+    s.set_defaults(func=cmd_status)
+
+    s = sub.add_parser("rebuild")
+    s.set_defaults(func=cmd_rebuild)
 
     return p
 
