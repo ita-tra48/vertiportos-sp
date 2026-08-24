@@ -1,0 +1,20 @@
+name: reviewers
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+permissions:
+  pull-requests: write
+jobs:
+  convida:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          AUTOR: ${{ github.event.pull_request.user.login }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          revisores=$(python3 -c "import json, os; m = json.load(open('governanca/integrantes.json')); print(','.join(u for u in m if u != os.environ['AUTOR']))")
+          if [ -n "$revisores" ]; then
+            gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --add-reviewer "$revisores"
+          fi
