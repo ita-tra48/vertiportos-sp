@@ -20,7 +20,7 @@ def bruto_alterado(raiz, base):
     r = subprocess.run(["git", "diff", "--name-only", f"{base}...HEAD"],
                        cwd=raiz, capture_output=True, text=True)
     if r.returncode != 0:
-        return []
+        raise SystemExit(f"valida_estrutura: git diff falhou para base {base}: {r.stderr.strip()}")
     return sorted(c for c in r.stdout.splitlines()
                   if c.startswith("dados/bruto/")
                   and not c.endswith(".gitkeep"))

@@ -1,5 +1,7 @@
 import subprocess
 
+import pytest
+
 import banco
 import valida_estrutura
 
@@ -33,6 +35,17 @@ def test_bruto_alterado_no_diff(tmp_repo):
     _git(tmp_repo, "commit", "-m", "mexe no bruto")
     assert valida_estrutura.bruto_alterado(tmp_repo, "main") == \
         ["dados/bruto/od.csv"]
+
+
+def test_bruto_alterado_ref_inexistente(tmp_repo):
+    _git(tmp_repo, "init", "-b", "main")
+    _git(tmp_repo, "config", "user.name", "T")
+    _git(tmp_repo, "config", "user.email", "t@t")
+    (tmp_repo / ".gitkeep").write_text("")
+    _git(tmp_repo, "add", "-A")
+    _git(tmp_repo, "commit", "-m", "base")
+    with pytest.raises(SystemExit):
+        valida_estrutura.bruto_alterado(tmp_repo, "ref-inexistente")
 
 
 def test_figura_sem_produz_e_apontada(tmp_repo, monkeypatch):
