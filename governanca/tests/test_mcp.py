@@ -1,0 +1,75 @@
+import json
+
+import banco
+import mcp_gov
+
+
+def _chama(nome, argumentos, mid=7):
+    return mcp_gov.despacha({"jsonrpc": "2.0", "id": mid,
+                             "method": "tools/call",
+                             "params": {"name": nome,
+                                        "arguments": argumentos}})
+
+
+def _texto(resposta):
+    return resposta["result"]["content"][0]["text"]
+
+
+def _semeia(monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Teste")
+    banco.registra("decisao", "dec-000001",
+                   {"titulo": "usar p-mediana", "just": "literatura",
+                    "alt": [], "status": "vigente"})
+    banco.registra("meta", "met-000001",
+                   {"titulo": "m", "status": "aberta"})
+    banco.registra("aresta", "dec-000001",
+                   {"relacao": "atende", "destino": "met-000001"})
+
+
+def test_initialize_e_tools_list(tmp_repo):
+    ini = mcp_gov.despacha({"jsonrpc": "2.0", "id": 1,
+                            "method": "initialize", "params": {}})
+    assert ini["result"]["protocolVersion"]
+    assert mcp_gov.despacha({"jsonrpc": "2.0",
+                             "method": "notifications/initialized"}) is None
+    lista = mcp_gov.despacha({"jsonrpc": "2.0", "id": 2,
+                              "method": "tools/list"})
+    nomes = {t["name"] for t in lista["result"]["tools"]}
+    assert nomes == {"consultar", "no", "vizinhos", "contexto", "auditoria"}
+
+
+def test_consultar_select_funciona(tmp_repo, monkeypatch):
+    _semeia(monkeypatch)
+    r = _chama("consultar", {"sql": "SELECT count(*) AS n FROM decisao"})
+    assert r["result"]["isError"] is False
+    assert "1" in _texto(r)
+
+
+def test_consultar_recusa_escrita(tmp_repo, monkeypatch):
+    _semeia(monkeypatch)
+    r = _chama("consultar", {"sql": "DELETE FROM evento"})
+    assert r["result"]["isError"] is True
+
+
+def test_no_aceita_prefixo(tmp_repo, monkeypatch):
+    _semeia(monkeypatch)
+    r = _chama("no", {"id": "dec-0"})
+    assert "usar p-mediana" in _texto(r)
+
+
+def test_contexto_e_vizinhos(tmp_repo, monkeypatch):
+    _semeia(monkeypatch)
+    assert "met-000001" in _texto(_chama("vizinhos", {"id": "dec-000001"}))
+    assert "atende" in _texto(_chama("contexto", {"id": "dec-000001",
+                                                  "raio": 2}))
+
+
+def test_auditoria_retorna_selo(tmp_repo, monkeypatch):
+    _semeia(monkeypatch)
+    doc = json.loads(_texto(_chama("auditoria", {})))
+    assert "selo" in doc
+
+
+def test_metodo_desconhecido_da_erro(tmp_repo):
+    r = mcp_gov.despacha({"jsonrpc": "2.0", "id": 9, "method": "prompts/list"})
+    assert r["error"]["code"] == -32601
