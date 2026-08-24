@@ -1,5 +1,6 @@
 import argparse
 import json
+import subprocess
 import sys
 
 import auditoria
@@ -269,6 +270,43 @@ def cmd_contexto(a):
     return 0
 
 
+def cmd_worktree(a):
+    try:
+        entidade_id = banco.resolve(a.tarefa)
+        tipo, payload = _payload_atual(entidade_id)
+    except ValueError as exc:
+        return _erro(str(exc))
+    if tipo != "tarefa":
+        return _erro(f"worktree exige tarefa, mas {entidade_id} e do tipo {tipo}")
+    destino = banco.RAIZ.parent / f"{banco.RAIZ.name}.worktrees" / entidade_id
+    if destino.exists():
+        print(destino)
+        return 0
+    sufixo = f"-{a.slug}" if a.slug else ""
+    branch = payload.get("branch") or f"tarefa/{entidade_id}{sufixo}"
+    destino.parent.mkdir(parents=True, exist_ok=True)
+
+    def _existe(ref):
+        return subprocess.run(
+            ["git", "rev-parse", "--verify", "--quiet", ref],
+            cwd=banco.RAIZ, capture_output=True).returncode == 0
+
+    if _existe(branch):
+        cmd = ["git", "worktree", "add", str(destino), branch]
+    else:
+        cmd = ["git", "worktree", "add", "-b", branch, str(destino)]
+        if _existe(a.base):
+            cmd.append(a.base)
+    r = subprocess.run(cmd, cwd=banco.RAIZ, capture_output=True, text=True)
+    if r.returncode != 0:
+        return _erro(r.stderr.strip())
+    if payload.get("branch") != branch:
+        payload["branch"] = branch
+        banco.registra("tarefa", entidade_id, payload)
+    print(destino)
+    return 0
+
+
 def constroi_parser():
     p = argparse.ArgumentParser(prog="gov")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -371,6 +409,12 @@ def constroi_parser():
     s.add_argument("--raio", type=int, default=1)
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_contexto)
+
+    s = sub.add_parser("worktree")
+    s.add_argument("tarefa")
+    s.add_argument("--slug")
+    s.add_argument("--base", default="main")
+    s.set_defaults(func=cmd_worktree)
 
     return p
 
