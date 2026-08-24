@@ -56,6 +56,8 @@ def _consultar(sql):
 
 
 def executa(nome, args):
+    if not nome:
+        raise ValueError("ferramenta desconhecida")
     if nome == "consultar":
         return _consultar(args["sql"])
     if nome == "auditoria":
@@ -91,8 +93,9 @@ def despacha(msg):
         return {"jsonrpc": "2.0", "id": mid,
                 "result": {"tools": FERRAMENTAS}}
     if metodo == "tools/call":
-        nome = msg["params"]["name"]
-        args = msg["params"].get("arguments") or {}
+        params = msg.get("params") or {}
+        nome = params.get("name")
+        args = params.get("arguments") or {}
         try:
             texto, erro = executa(nome, args), False
         except Exception as exc:
@@ -110,7 +113,15 @@ def main():
         linha = linha.strip()
         if not linha:
             continue
-        resposta = despacha(json.loads(linha))
+        try:
+            msg = json.loads(linha)
+        except json.JSONDecodeError:
+            resposta = {"jsonrpc": "2.0", "id": None,
+                        "error": {"code": -32700, "message": "json invalido"}}
+            sys.stdout.write(json.dumps(resposta, ensure_ascii=False) + "\n")
+            sys.stdout.flush()
+            continue
+        resposta = despacha(msg)
         if resposta is not None:
             sys.stdout.write(json.dumps(resposta, ensure_ascii=False) + "\n")
             sys.stdout.flush()

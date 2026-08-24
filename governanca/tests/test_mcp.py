@@ -73,3 +73,33 @@ def test_auditoria_retorna_selo(tmp_repo, monkeypatch):
 def test_metodo_desconhecido_da_erro(tmp_repo):
     r = mcp_gov.despacha({"jsonrpc": "2.0", "id": 9, "method": "prompts/list"})
     assert r["error"]["code"] == -32601
+
+
+def test_tools_call_sem_params(tmp_repo):
+    r = mcp_gov.despacha({"jsonrpc": "2.0", "id": 10, "method": "tools/call"})
+    assert r["result"]["isError"] is True
+    assert "ferramenta desconhecida" in _texto(r)
+
+
+def test_servidor_json_invalido_nao_mata(tmp_repo):
+    import subprocess
+    import sys
+    script_path = (
+        __import__("pathlib").Path(__file__).resolve().parents[1] / "scripts" /
+        "mcp_gov.py"
+    )
+    proc = subprocess.Popen(
+        [sys.executable, str(script_path)],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    entrada = '{"json": "invalido"\n{"jsonrpc":"2.0","id":2,"method":"tools/list"}\n'
+    stdout, stderr = proc.communicate(entrada, timeout=5)
+    linhas = [l for l in stdout.strip().split("\n") if l]
+    assert len(linhas) >= 1
+    import json
+    ultima = json.loads(linhas[-1])
+    assert ultima["id"] == 2
+    assert "tools" in ultima["result"]
