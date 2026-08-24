@@ -13,7 +13,7 @@ Peso: apresentação = 30% do bimestre; relatórios = 100% da nota de exame.
 
 ## Stack
 
-- **R** é a linguagem da disciplina. Código em `R/`, um script por etapa, numerado (`01-carrega.R`, `02-modelo.R`).
+- **R** é a linguagem da disciplina. Código em `app/`, um script por etapa, numerado (`01-carrega.R`, `02-modelo.R`).
 - Otimização: `lpSolve` / `ROI`. ML: `tidymodels`, `cluster`. Dados: `tidyverse`.
 - Relatório em Quarto/RMarkdown dentro de `relatorio/`.
 
@@ -26,3 +26,15 @@ Peso: apresentação = 30% do bimestre; relatórios = 100% da nota de exame.
 ## Fontes de dados candidatas
 
 ANAC (dados estatísticos, VRA), DECEA, BTS/T-100 (EUA), OpenSky.
+
+## Governança é lei
+
+- Contexto de trabalho se adquire pelo grafo: `./gov contexto ID --raio 2`
+  (ou MCP `gov`), a partir dos ids da tarefa/decisão. Ler `docs/` inteiro
+  é último recurso.
+- Fluxo de trabalho: tarefa registrada → `./gov worktree TAR-ID` → código
+  no worktree → registros (`decisao`, `experimento`, `ia`) → `./gov update`
+  → PR conforme `docs/PADRAO_PR.md`.
+- Arquitetura de código: `docs/ARQUITETURA.md`. Descrição de PR:
+  `docs/PADRAO_PR.md`. Toda interação de IA que chega ao produto vira
+  `./gov ia --critica "..."` antes do commit.

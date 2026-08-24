@@ -13,3 +13,5 @@ governanca/site/
 __pycache__/
 .pytest_cache/
 .playwright-mcp/
+Enunciado/
+docs/*.pdf
