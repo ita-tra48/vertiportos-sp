@@ -280,6 +280,14 @@ def cmd_worktree(a):
         return _erro(f"worktree exige tarefa, mas {entidade_id} e do tipo {tipo}")
     destino = banco.RAIZ.parent / f"{banco.RAIZ.name}.worktrees" / entidade_id
     if destino.exists():
+        if not payload.get("branch"):
+            r = subprocess.run(
+                ["git", "-C", str(destino), "rev-parse", "--abbrev-ref", "HEAD"],
+                capture_output=True, text=True)
+            if r.returncode == 0:
+                branch = r.stdout.strip()
+                payload["branch"] = branch
+                banco.registra("tarefa", entidade_id, payload)
         print(destino)
         return 0
     sufixo = f"-{a.slug}" if a.slug else ""

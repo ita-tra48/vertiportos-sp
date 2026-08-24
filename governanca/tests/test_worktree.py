@@ -57,3 +57,18 @@ def test_recusa_no_que_nao_e_tarefa(tmp_repo, monkeypatch):
                    {"titulo": "m", "status": "aberta"})
     _repo_git(tmp_repo)
     assert gov.main(["worktree", "met-000001"]) == 2
+
+
+def test_reconcilia_branch_se_worktree_existe_sem_payload(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Teste")
+    banco.registra("tarefa", "tar-000003",
+                   {"titulo": "t", "resp": "Ana", "status": "aberta"})
+    _repo_git(tmp_repo)
+    destino = tmp_repo.parent / f"{tmp_repo.name}.worktrees" / "tar-000003"
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    _git(tmp_repo, "worktree", "add", "-b", "tarefa/tar-000003-manual", str(destino))
+    assert gov.main(["worktree", "tar-000003"]) == 0
+    branch = banco.conecta().execute(
+        "SELECT payload->>'branch' FROM no WHERE entidade_id = 'tar-000003'"
+    ).fetchone()[0]
+    assert branch == "tarefa/tar-000003-manual"
