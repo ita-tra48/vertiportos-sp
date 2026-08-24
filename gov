@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+raiz="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "$raiz/governanca/.venv/bin/python" "$raiz/governanca/scripts/gov.py" "$@"

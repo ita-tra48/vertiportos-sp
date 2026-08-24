@@ -5,7 +5,7 @@ Estrutura:
 ```
 dados/bruto      # dados originais, somente-leitura
 dados/tratado    # saídas dos scripts de preparação
-R/               # scripts numerados
+app/             # camada A em R: scripts numerados + app/R/ auxiliares
 relatorio/       # Quarto/RMarkdown + figuras
 apresentacao/    # slides
 docs/            # plano de disciplina, enunciados, referências
