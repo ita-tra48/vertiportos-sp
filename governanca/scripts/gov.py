@@ -4,6 +4,7 @@ import sys
 
 import auditoria
 import banco
+import contexto
 
 MIN_CRITICA = 20
 
@@ -249,6 +250,25 @@ def cmd_update(a):
     return cmd_auditoria(a)
 
 
+def cmd_contexto(a):
+    try:
+        entidade_id = banco.resolve(a.id)
+    except ValueError as exc:
+        return _erro(str(exc))
+    con = banco.conecta(somente_leitura=True)
+    nos, arestas = contexto.vizinhanca(con, entidade_id, a.raio)
+    regs = contexto.registros(con, nos)
+    if a.json:
+        print(json.dumps(
+            {"centro": entidade_id, "raio": a.raio, "registros": regs,
+             "arestas": [{"origem": o, "relacao": r, "destino": d}
+                         for o, r, d in arestas]},
+            ensure_ascii=False, indent=2))
+    else:
+        print(contexto.markdown(entidade_id, a.raio, regs, arestas))
+    return 0
+
+
 def constroi_parser():
     p = argparse.ArgumentParser(prog="gov")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -345,6 +365,12 @@ def constroi_parser():
 
     s = sub.add_parser("update")
     s.set_defaults(func=cmd_update)
+
+    s = sub.add_parser("contexto")
+    s.add_argument("id")
+    s.add_argument("--raio", type=int, default=1)
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_contexto)
 
     return p
 
