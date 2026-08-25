@@ -88,6 +88,15 @@ def test_escapa_html_do_usuario(tmp_repo, monkeypatch):
     assert "&lt;img" in html
 
 
+def test_tarefas_mostra_branch(cenario):
+    banco.registra("tarefa", banco.novo_id("tar"),
+                   {"titulo": "usar worktree", "resp": "Ana",
+                    "status": "aberta", "branch": "tarefa/tar-xyz-demanda"})
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "tarefas.html").read_text()
+    assert "tarefa/tar-xyz-demanda" in html
+
+
 def test_update_gera_site(cenario, monkeypatch):
     monkeypatch.setattr(site_gov, "DESTINO",
                         cenario / "governanca" / "site")

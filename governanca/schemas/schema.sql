@@ -41,7 +41,8 @@ SELECT n.entidade_id AS id, c.criado_em, c.criado_por,
        n.payload->>'titulo' AS titulo,
        n.payload->>'resp'   AS resp,
        try_cast(n.payload->>'prazo' AS DATE) AS prazo,
-       coalesce(n.payload->>'status', 'aberta') AS status
+       coalesce(n.payload->>'status', 'aberta') AS status,
+       n.payload->>'branch' AS branch
 FROM no n JOIN criacao c USING (entidade_id) WHERE n.tipo = 'tarefa';
 
 CREATE OR REPLACE VIEW pendencia AS

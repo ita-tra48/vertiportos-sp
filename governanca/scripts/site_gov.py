@@ -43,7 +43,7 @@ CAMPOS = {"titulo": "título", "desc": "descrição", "just": "justificativa",
           "proposito": "propósito", "modelo": "modelo", "pedido": "pedido",
           "retorno": "retorno", "aceito": "aceite",
           "critica": "crítica humana", "relacao": "relação",
-          "destino": "destino"}
+          "destino": "destino", "branch": "branch"}
 
 _ROTULO_SELO = {"verde": "APROVADO", "vermelho": "REPROVADO",
                 "cinza": "NÃO AUDITADO"}
@@ -416,9 +416,10 @@ def _trilha(con):
 
 
 def _tarefas(con):
-    tarefas = _tabela(["id", "tarefa", "responsável", "prazo", "status"],
-                      con.execute(
-        "SELECT id, titulo, resp, prazo, status FROM tarefa "
+    tarefas = _tabela(
+        ["id", "tarefa", "responsável", "prazo", "status", "branch"],
+        con.execute(
+        "SELECT id, titulo, resp, prazo, status, branch FROM tarefa "
         "ORDER BY status, prazo NULLS LAST, id").fetchall(),
         "Nenhuma tarefa registrada.")
     pendencias = _tabela(
