@@ -50,3 +50,5 @@ INSERT INTO evento VALUES ('evt-295pkd', '2026-08-25 00:55:24.143808', 'Gustavo 
 INSERT INTO evento VALUES ('evt-i47hqx', '2026-08-25 00:55:27.972802', 'Gustavo Vidal', 'aresta', 'pen-17lltu', '{"destino": "met-q0gphg", "relacao": "bloqueia"}');
 INSERT INTO evento VALUES ('evt-lre9yb', '2026-08-25 00:56:34.048503', 'Gustavo Vidal', 'aresta', 'dec-9oa8dy', '{"destino": "fon-0clhgr", "relacao": "usa"}');
 INSERT INTO evento VALUES ('evt-qc8vxh', '2026-08-25 00:56:34.126309', 'Gustavo Vidal', 'aresta', 'dec-op2ptl', '{"destino": "met-7k7opg", "relacao": "atende"}');
+INSERT INTO evento VALUES ('evt-eskbs5', '2026-08-25 02:08:36.760807', 'Gustavo Vidal', 'tarefa', 'tar-23j8xw', '{"prazo": "2026-08-25", "resp": "Gustavo Vidal", "status": "aberta", "titulo": "Aplicar correcoes da revisao final da infra"}');
+INSERT INTO evento VALUES ('evt-qqozqh', '2026-08-25 02:08:37.250613', 'Gustavo Vidal', 'aresta', 'met-q0gphg', '{"destino": "tar-23j8xw", "relacao": "tem"}');
