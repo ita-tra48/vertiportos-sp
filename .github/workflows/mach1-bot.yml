@@ -1,7 +1,7 @@
 name: mach1-bot
 on:
   pull_request:
-    types: [opened, synchronize, ready_for_review]
+    types: [opened, ready_for_review]
 permissions:
   contents: read
   pull-requests: write
@@ -27,3 +27,11 @@ jobs:
             Leia governanca/mach1/PROMPT.md e execute o protocolo sobre esta PR.
           claude_args: |
             --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(python governanca/scripts/gov.py rebuild),Bash(python governanca/scripts/gov.py contexto:*),Bash(python governanca/scripts/gov.py consulta:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
+      - if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          comentarios=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments --jq '.[].body')
+          if ! echo "$comentarios" | grep -q '^\*\*Mach1-Bot\*\*'; then
+            echo "::warning::mach1-bot nao publicou comentario nesta PR"
+          fi
