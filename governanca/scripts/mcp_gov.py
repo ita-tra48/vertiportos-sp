@@ -38,7 +38,7 @@ FERRAMENTAS = [
 
 
 def _abre_leitura():
-    if not banco.DB.exists():
+    if not banco.DB.exists() or banco._desatualizado():
         banco.rebuild()
     con = duckdb.connect(str(banco.DB), read_only=True)
     con.execute("SET enable_external_access = false")
