@@ -97,6 +97,21 @@ def test_nao_segura_lock_rw_apos_chamada(tmp_repo, monkeypatch):
     con.close()
 
 
+def test_despacha_reconstroi_banco_desatualizado(tmp_repo, monkeypatch):
+    import os
+    _semeia(monkeypatch)
+    stmt = ("INSERT INTO evento VALUES ('evt-dump001', '2026-01-01 00:00:00', "
+           "'Teste', 'meta', 'met-000002', "
+           "'{\"titulo\": \"meta via dump\", \"status\": \"aberta\"}');\n")
+    with banco.DUMP.open("a", encoding="utf-8") as fh:
+        fh.write(stmt)
+    futuro = banco.DUMP.stat().st_mtime + 10
+    os.utime(banco.DUMP, (futuro, futuro))
+    r = _chama("consultar", {"sql": "SELECT titulo FROM meta "
+                             "WHERE id = 'met-000002'"})
+    assert "meta via dump" in _texto(r)
+
+
 def test_no_com_registro_fantasma_da_erro_claro(tmp_repo, monkeypatch):
     monkeypatch.setenv("GOV_AUTOR", "Teste")
     banco.registra("aresta", "dec-fantasma",

@@ -108,3 +108,84 @@ print(grafo.svg(banco.conecta()), end="")
     resultado = subprocess.run([sys.executable, "-c", codigo],
                                capture_output=True, text=True, check=True)
     assert resultado.stdout == primeiro
+
+
+def test_dados_nos_traz_campos_do_payload(cenario):
+    con, met, dec = cenario
+    nos, arestas = grafo.dados_nos(con)
+    achado = next(n for n in nos if n["id"] == dec)
+    assert achado["tipo"] == "decisao"
+    assert achado["titulo"] == "Recorte metropolitano"
+    assert achado["autor"] == "Gustavo"
+    assert achado["status"] == "vigente"
+    assert achado["campos"]["just"] == "porque X"
+    assert arestas == [{"origem": dec, "relacao": "atende", "destino": met}]
+
+
+def test_dados_nos_marca_concluido_sem_pendencia(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("tarefa", "Baixar OD", "--resp", "Ana")
+    con = banco.conecta()
+    tid = con.execute("SELECT id FROM tarefa").fetchone()[0]
+    roda("fecha", tid, "--resolucao", "feito")
+    nos, _ = grafo.dados_nos(banco.conecta())
+    achado = next(n for n in nos if n["id"] == tid)
+    assert achado["status"] == "feita"
+    assert achado["concluido"] is True
+
+
+def test_dados_nos_pendencia_aberta_apaga_concluido(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("tarefa", "Baixar OD", "--resp", "Ana")
+    con = banco.conecta()
+    tid = con.execute("SELECT id FROM tarefa").fetchone()[0]
+    roda("fecha", tid, "--resolucao", "feito")
+    roda("pendencia", "Falta aprovacao")
+    pid = banco.conecta().execute("SELECT id FROM pendencia").fetchone()[0]
+    roda("liga", pid, "bloqueia", tid)
+    nos, _ = grafo.dados_nos(banco.conecta())
+    achado = next(n for n in nos if n["id"] == tid)
+    assert achado["concluido"] is False
+
+
+def test_json_dados_e_ordenado_e_escapa_fechamento_de_script(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("meta", "Meta </script> maliciosa")
+    texto = grafo.json_dados(banco.conecta())
+    assert "</script>" not in texto
+    assert "<\\/script>" in texto
+
+
+def test_pagina_home_traz_dados_e_legenda(cenario):
+    con, met, dec = cenario
+    html = grafo.pagina_home(con)
+    assert f'"id": "{met}"' in html
+    assert f'"id": "{dec}"' in html
+    for tipo in grafo.FAIXAS:
+        assert f'data-tipo="{tipo}"' in html
+    assert 'data-status="todos"' in html
+    assert 'data-status="abertos"' in html
+    assert 'data-status="concluidos"' in html
+    assert "grafo-brilho" in html
+
+
+def test_pagina_home_e_determinista(cenario):
+    con, _, _ = cenario
+    assert grafo.pagina_home(con) == grafo.pagina_home(con)
+
+
+def test_pagina_home_no_e_acessivel_por_teclado(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    assert "createElementNS(NS, 'title')" in html
+    assert "setAttribute('tabindex', '0')" in html
+    assert "setAttribute('role', 'button')" in html
+    assert "setAttribute('aria-label'" in html
+    assert "e.key === 'Enter'" in html
+
+
+def test_aplica_filtros_esconde_tooltip(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    trecho = html[html.index("function aplicaFiltros(){"):]
+    assert trecho.split("\n")[1].strip() == "escondeTooltip();"
