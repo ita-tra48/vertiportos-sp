@@ -33,13 +33,26 @@ def cenario(tmp_repo, monkeypatch):
 def test_gera_as_oito_paginas(cenario):
     destino = site_gov.gera(cenario / "governanca" / "site")
     nomes = {p.name for p in destino.glob("*.html")}
-    assert nomes == {a for a, _ in site_gov.PAGINAS}
+    assert nomes == {a for a, _ in site_gov.PAGINAS} | {"grafo.html"}
     assert len(site_gov.PAGINAS) == 8
 
 
-def test_index_mostra_selo_e_metas(cenario):
+def test_index_e_o_grafo(cenario):
     destino = site_gov.gera(cenario / "governanca" / "site")
     html = (destino / "index.html").read_text()
+    assert "DADOS_GRAFO" in html
+    assert "grafo-legenda" in html
+
+
+def test_grafo_html_redireciona_para_index(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "grafo.html").read_text()
+    assert 'url=index.html' in html
+
+
+def test_estado_mostra_selo_e_metas(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "estado.html").read_text()
     assert "Localizar vertiportos na cidade de Sao Paulo" in html
     assert "selo" in html.lower()
 
@@ -83,9 +96,17 @@ def test_escapa_html_do_usuario(tmp_repo, monkeypatch):
     monkeypatch.setenv("GOV_AUTOR", "Gustavo")
     roda("meta", "<img src=x onerror=alert(1)>")
     destino = site_gov.gera(tmp_repo / "governanca" / "site")
-    html = (destino / "index.html").read_text()
+    html = (destino / "estado.html").read_text()
     assert "<img src=x" not in html
     assert "&lt;img" in html
+
+
+def test_grafo_home_escapa_fechamento_de_script(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("meta", "Meta </script> maliciosa")
+    destino = site_gov.gera(tmp_repo / "governanca" / "site")
+    html = (destino / "index.html").read_text()
+    assert "</script> maliciosa" not in html
 
 
 def test_tarefas_mostra_branch(cenario):

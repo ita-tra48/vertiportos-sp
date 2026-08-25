@@ -20,8 +20,8 @@ ICONE = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
 DESTINO = banco.RAIZ / "governanca" / "site"
 FONTES = banco.RAIZ / "governanca" / "assets" / "fontes"
 
-PAGINAS = (("index.html", "Estado"),
-           ("grafo.html", "Grafo executivo"),
+PAGINAS = (("index.html", "Grafo executivo"),
+           ("estado.html", "Estado"),
            ("trilha.html", "Trilha"),
            ("tarefas.html", "Tarefas e pendências"),
            ("ia.html", "Interações com IA"),
@@ -218,19 +218,14 @@ nav a[aria-current]{border-left:0;border-bottom-color:var(--anil)}
 .carimbo{grid-template-columns:1fr}
 .reg dl{grid-template-columns:1fr}
 .folha{margin:0;border-left:0;border-right:0}}
-"""
+""" + grafo.ESTILO_HOME
 
-PAN = """<script>
-(function(){var s=document.getElementById('grafo');if(!s)return;
-var g=document.getElementById('camada'),k=1,x=0,y=0,a=false,px=0,py=0;
-function t(){g.setAttribute('transform','translate('+x+' '+y+') scale('+k+')')}
-s.addEventListener('wheel',function(e){e.preventDefault();
-k=Math.min(4,Math.max(.3,k*(e.deltaY<0?1.1:.9)));t()},{passive:false});
-s.addEventListener('mousedown',function(e){a=true;px=e.clientX;py=e.clientY});
-window.addEventListener('mouseup',function(){a=false});
-window.addEventListener('mousemove',function(e){if(!a)return;
-x+=e.clientX-px;y+=e.clientY-py;px=e.clientX;py=e.clientY;t()});})();
-</script>"""
+GRAFO_REDIRECT = ('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
+                  '<meta http-equiv="refresh" content="0; url=index.html">'
+                  '<title>Grafo executivo — TRA-48 Grupo 1</title></head>'
+                  '<body><p>Esta página se mudou para '
+                  '<a href="index.html">index.html</a>.</p></body></html>')
+
 
 
 def _esc(v):
@@ -336,7 +331,7 @@ def _selo(m):
             f'<small>Selo de auditoria</small></div><div>{lado}</div></section>')
 
 
-def _index(con, m):
+def _estado(con, m):
     r, p, h = m["rastreabilidade"], m["postura"], m["higiene"]
     orfaos = len(r["orfaos"])
     incompletas = len(h["tarefas_incompletas"])
@@ -523,11 +518,8 @@ def gera(destino=None):
         "SELECT coalesce(strftime(max(ts), '%Y-%m-%d'), 'sem registro') "
         "FROM evento").fetchone()[0]
     corpos = {
-        "index.html": _index(con, m),
-        "grafo.html": f'<div class="grafo-moldura">{grafo.svg(con)}</div>'
-                      f'<p class="nota">Roda do mouse amplia, arrastar move, '
-                      f'clique no nó abre o registro na trilha. Um nó sem '
-                      f'nenhuma aresta é um defeito e reprova o selo.</p>',
+        "index.html": grafo.pagina_home(con),
+        "estado.html": _estado(con, m),
         "trilha.html": _trilha(con),
         "tarefas.html": _tarefas(con),
         "ia.html": _ia(con, m),
@@ -541,10 +533,10 @@ def gera(destino=None):
     tmp.mkdir(parents=True)
     try:
         for arquivo, titulo in PAGINAS:
-            extra = PAN if arquivo == "grafo.html" else ""
             (tmp / arquivo).write_text(
-                _pagina(arquivo, titulo, corpos[arquivo], m, extra),
+                _pagina(arquivo, titulo, corpos[arquivo], m),
                 encoding="utf-8")
+        (tmp / "grafo.html").write_text(GRAFO_REDIRECT, encoding="utf-8")
         (tmp / "estilo.css").write_text(ESTILO, encoding="utf-8")
         (tmp / ".nojekyll").write_text("", encoding="utf-8")
         if FONTES.is_dir():
