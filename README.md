@@ -12,3 +12,15 @@ docs/            # plano de disciplina, enunciados, referências
 ```
 
 Ver `CLAUDE.md` para prazos, stack e convenções.
+
+## Como rodar
+
+```
+python3 -m venv governanca/.venv
+governanca/.venv/bin/pip install -r governanca/requirements.txt
+./gov rebuild
+./gov status
+```
+
+Depois disso o `.mcp.json` já conecta o Claude Code ao servidor MCP `gov`
+automaticamente.
