@@ -1,6 +1,8 @@
 import json
 import sys
 
+import duckdb
+
 import auditoria
 import banco
 import contexto
@@ -35,19 +37,32 @@ FERRAMENTAS = [
 ]
 
 
-def _leitura():
-    con = banco.conecta(somente_leitura=True)
+def _abre_leitura():
+    if not banco.DB.exists():
+        banco.rebuild()
+    con = duckdb.connect(str(banco.DB), read_only=True)
     con.execute("SET enable_external_access = false")
     return con
 
 
-def _consultar(sql):
+def _resolve(con, ref):
+    achados = [r[0] for r in con.execute(
+        "SELECT DISTINCT entidade_id FROM evento WHERE entidade_id LIKE ? "
+        "ORDER BY entidade_id", [ref + "%"]).fetchall()]
+    if not achados:
+        raise ValueError(f"id nao encontrado: {ref}")
+    if len(achados) > 1:
+        raise ValueError(f"prefixo ambiguo {ref}: {', '.join(achados)}")
+    return achados[0]
+
+
+def _consultar(con, sql):
     sql = sql.strip().rstrip(";")
     if not sql.lower().startswith(("select", "with")):
         raise ValueError("apenas SELECT ou WITH")
     if ";" in sql:
         raise ValueError("um statement por consulta")
-    cur = _leitura().execute(sql)
+    cur = con.execute(sql)
     colunas = [d[0] for d in cur.description]
     linhas = [" | ".join(colunas)]
     for linha in cur.fetchall():
@@ -58,25 +73,31 @@ def _consultar(sql):
 def executa(nome, args):
     if not nome:
         raise ValueError("ferramenta desconhecida")
-    if nome == "consultar":
-        return _consultar(args["sql"])
-    if nome == "auditoria":
-        return json.dumps(auditoria.calcula(_leitura()),
-                          ensure_ascii=False, default=str, indent=2)
-    entidade_id = banco.resolve(args["id"])
-    con = _leitura()
-    if nome == "no":
-        regs = contexto.registros(con, {entidade_id})
-        return json.dumps(regs[0], ensure_ascii=False, indent=2)
-    if nome == "vizinhos":
-        _, arestas = contexto.vizinhanca(con, entidade_id, 1)
-        return "\n".join(f"{o} —{r}→ {d}" for o, r, d in arestas) or "sem arestas"
-    if nome == "contexto":
-        raio = int(args.get("raio") or 1)
-        nos, arestas = contexto.vizinhanca(con, entidade_id, raio)
-        return contexto.markdown(entidade_id, raio,
-                                 contexto.registros(con, nos), arestas)
-    raise ValueError(f"ferramenta desconhecida: {nome}")
+    con = _abre_leitura()
+    try:
+        if nome == "consultar":
+            return _consultar(con, args["sql"])
+        if nome == "auditoria":
+            return json.dumps(auditoria.calcula(con),
+                              ensure_ascii=False, default=str, indent=2)
+        entidade_id = _resolve(con, args["id"])
+        if nome == "no":
+            regs = contexto.registros(con, {entidade_id})
+            if not regs:
+                raise ValueError(f"sem registro para {entidade_id}")
+            return json.dumps(regs[0], ensure_ascii=False, indent=2)
+        if nome == "vizinhos":
+            _, arestas = contexto.vizinhanca(con, entidade_id, 1)
+            return "\n".join(f"{o} —{r}→ {d}"
+                             for o, r, d in arestas) or "sem arestas"
+        if nome == "contexto":
+            raio = int(args.get("raio") or 1)
+            nos, arestas = contexto.vizinhanca(con, entidade_id, raio)
+            return contexto.markdown(entidade_id, raio,
+                                     contexto.registros(con, nos), arestas)
+        raise ValueError(f"ferramenta desconhecida: {nome}")
+    finally:
+        con.close()
 
 
 def despacha(msg):
