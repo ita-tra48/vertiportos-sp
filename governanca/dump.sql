@@ -62,3 +62,5 @@ INSERT INTO evento VALUES ('evt-yy94l1', '2026-08-25 01:05:27.539903', 'Gustavo 
 INSERT INTO evento VALUES ('evt-hi5jtf', '2026-08-25 01:05:31.930104', 'Gustavo Vidal', 'tarefa', 'tar-du19f9', '{"branch": "tarefa/tar-du19f9-fluxo-pr", "prazo": "2026-08-25", "resp": "Gustavo Vidal", "status": "aberta", "titulo": "Validar o fluxo de PR de ponta a ponta"}');
 INSERT INTO evento VALUES ('evt-9t6rir', '2026-08-25 01:05:55.785885', 'Gustavo Vidal', 'arquivo', 'arq-03l5xz', '{"desc": "readme com link do site publico", "titulo": "README.md"}');
 INSERT INTO evento VALUES ('evt-2f5pg2', '2026-08-25 01:06:04.288999', 'Gustavo Vidal', 'aresta', 'arq-03l5xz', '{"destino": "dec-9oa8dy", "relacao": "deriva"}');
+INSERT INTO evento VALUES ('evt-5txdrf', '2026-08-25 01:10:00.851646', 'Gustavo Vidal', 'arquivo', 'arq-v3hnhm', '{"desc": "workflow do mach1-bot com permissao oidc", "titulo": ".github/workflows/mach1-bot.yml"}');
+INSERT INTO evento VALUES ('evt-ybtjcr', '2026-08-25 01:10:04.753628', 'Gustavo Vidal', 'aresta', 'arq-v3hnhm', '{"destino": "dec-m465re", "relacao": "deriva"}');
