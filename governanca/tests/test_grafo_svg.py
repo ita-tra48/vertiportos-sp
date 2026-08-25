@@ -172,3 +172,20 @@ def test_pagina_home_traz_dados_e_legenda(cenario):
 def test_pagina_home_e_determinista(cenario):
     con, _, _ = cenario
     assert grafo.pagina_home(con) == grafo.pagina_home(con)
+
+
+def test_pagina_home_no_e_acessivel_por_teclado(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    assert "createElementNS(NS, 'title')" in html
+    assert "setAttribute('tabindex', '0')" in html
+    assert "setAttribute('role', 'button')" in html
+    assert "setAttribute('aria-label'" in html
+    assert "e.key === 'Enter'" in html
+
+
+def test_aplica_filtros_esconde_tooltip(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    trecho = html[html.index("function aplicaFiltros(){"):]
+    assert trecho.split("\n")[1].strip() == "escondeTooltip();"

@@ -241,9 +241,15 @@ function pontoSvg(cx, cy){
   return pt.matrixTransform(svg.getScreenCTM().inverse());
 }
 function escondeTooltip(){ tooltip.hidden = true; }
-function posicionaTooltip(e){
-  tooltip.style.left = (e.clientX + 14) + 'px';
-  tooltip.style.top = (e.clientY + 14) + 'px';
+function posicionaTooltip(id, e){
+  if (e && typeof e.clientX === 'number') {
+    tooltip.style.left = (e.clientX + 14) + 'px';
+    tooltip.style.top = (e.clientY + 14) + 'px';
+    return;
+  }
+  var r = elGrupo[id].getBoundingClientRect();
+  tooltip.style.left = (r.left + r.width + 8) + 'px';
+  tooltip.style.top = (r.top + r.height + 8) + 'px';
 }
 function mostraTooltip(id, e){
   var no = nos[id];
@@ -270,7 +276,7 @@ function mostraTooltip(id, e){
   });
   tooltip.appendChild(dl);
   tooltip.hidden = false;
-  posicionaTooltip(e);
+  posicionaTooltip(id, e);
 }
 var selecionado = null;
 function aplicaSelecao(){
@@ -292,9 +298,15 @@ function alternaSelecao(id){
 }
 Object.keys(nos).forEach(function(id){
   var no = nos[id];
+  var rotuloTipo = DADOS.rotulos[no.tipo] || no.tipo;
   var g = document.createElementNS(NS, 'g');
   g.setAttribute('class', 'grafo-no' + (no.concluido ? ' grafo-brilho' : ''));
+  g.setAttribute('tabindex', '0');
+  g.setAttribute('role', 'button');
+  g.setAttribute('aria-label', no.titulo + ' (' + rotuloTipo + ')');
   g.style.color = DADOS.cores[no.tipo] || '#4a5560';
+  var tituloSvg = document.createElementNS(NS, 'title');
+  tituloSvg.textContent = no.titulo + ' — ' + rotuloTipo;
   var circulo = document.createElementNS(NS, 'circle');
   circulo.setAttribute('r', '9');
   circulo.setAttribute('fill', DADOS.cores[no.tipo] || '#4a5560');
@@ -306,6 +318,7 @@ Object.keys(nos).forEach(function(id){
   texto.setAttribute('x', '13');
   texto.setAttribute('y', '4');
   texto.textContent = no.titulo;
+  g.appendChild(tituloSvg);
   g.appendChild(circulo);
   g.appendChild(texto);
   camadaNos.appendChild(g);
@@ -329,6 +342,11 @@ Object.keys(nos).forEach(function(id){
   });
   g.addEventListener('pointerenter', function(e){ mostraTooltip(id, e); });
   g.addEventListener('pointerleave', function(){ escondeTooltip(); });
+  g.addEventListener('focus', function(e){ mostraTooltip(id, e); });
+  g.addEventListener('blur', function(){ escondeTooltip(); });
+  g.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternaSelecao(id); }
+  });
 });
 svg.addEventListener('pointerdown', function(e){
   if (e.target.id === 'grafo-fundo') { selecionado = null; aplicaSelecao(); }
@@ -342,6 +360,7 @@ function visivel(no){
   return true;
 }
 function aplicaFiltros(){
+  escondeTooltip();
   Object.keys(nos).forEach(function(id){
     elGrupo[id].style.display = visivel(nos[id]) ? '' : 'none';
   });
