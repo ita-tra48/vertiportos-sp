@@ -38,3 +38,4 @@ ANAC (dados estatísticos, VRA), DECEA, BTS/T-100 (EUA), OpenSky.
 - Arquitetura de código: `docs/ARQUITETURA.md`. Descrição de PR:
   `docs/PADRAO_PR.md`. Toda interação de IA que chega ao produto vira
   `./gov ia --critica "..."` antes do commit.
+- Antes de criar worktree ou abrir PR: git fetch origin && git rebase origin/main.
