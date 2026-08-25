@@ -64,6 +64,60 @@ def test_figura_sem_produz_e_apontada(tmp_repo, monkeypatch):
         ["relatorio/figuras/curva.png"]
 
 
+def test_dump_so_com_linhas_adicionadas_ok(tmp_repo):
+    _git(tmp_repo, "init", "-b", "main")
+    _git(tmp_repo, "config", "user.name", "T")
+    _git(tmp_repo, "config", "user.email", "t@t")
+    dump = tmp_repo / "governanca" / "dump.sql"
+    dump.parent.mkdir(parents=True, exist_ok=True)
+    dump.write_text("INSERT INTO evento VALUES (1);\n")
+    _git(tmp_repo, "add", "-A")
+    _git(tmp_repo, "commit", "-m", "base")
+    _git(tmp_repo, "checkout", "-b", "tarefa/x")
+    with dump.open("a") as fh:
+        fh.write("INSERT INTO evento VALUES (2);\n")
+    _git(tmp_repo, "add", "-A")
+    _git(tmp_repo, "commit", "-m", "so adiciona")
+    assert valida_estrutura.dump_reescrito(tmp_repo, "main") == []
+
+
+def test_dump_com_linha_removida_e_apontado(tmp_repo):
+    _git(tmp_repo, "init", "-b", "main")
+    _git(tmp_repo, "config", "user.name", "T")
+    _git(tmp_repo, "config", "user.email", "t@t")
+    dump = tmp_repo / "governanca" / "dump.sql"
+    dump.parent.mkdir(parents=True, exist_ok=True)
+    dump.write_text("INSERT INTO evento VALUES (1);\n"
+                    "INSERT INTO evento VALUES (2);\n")
+    _git(tmp_repo, "add", "-A")
+    _git(tmp_repo, "commit", "-m", "base")
+    _git(tmp_repo, "checkout", "-b", "tarefa/x")
+    dump.write_text("INSERT INTO evento VALUES (1);\n"
+                    "INSERT INTO evento VALUES (3);\n")
+    _git(tmp_repo, "add", "-A")
+    _git(tmp_repo, "commit", "-m", "reescreve linha")
+    problemas = valida_estrutura.dump_reescrito(tmp_repo, "main")
+    assert len(problemas) == 1
+    assert "VALUES (2)" in problemas[0]
+
+
+def test_main_aponta_dump_reescrito_com_base(tmp_repo, capsys):
+    _git(tmp_repo, "init", "-b", "main")
+    _git(tmp_repo, "config", "user.name", "T")
+    _git(tmp_repo, "config", "user.email", "t@t")
+    dump = tmp_repo / "governanca" / "dump.sql"
+    dump.parent.mkdir(parents=True, exist_ok=True)
+    dump.write_text("INSERT INTO evento VALUES (1);\n")
+    _git(tmp_repo, "add", "-A")
+    _git(tmp_repo, "commit", "-m", "base")
+    _git(tmp_repo, "checkout", "-b", "tarefa/x")
+    dump.write_text("INSERT INTO evento VALUES (9);\n")
+    _git(tmp_repo, "add", "-A")
+    _git(tmp_repo, "commit", "-m", "reescreve")
+    assert valida_estrutura.main(["--base", "main"]) == 1
+    assert "nao e append-only" in capsys.readouterr().err
+
+
 def test_main_devolve_1_com_problema(tmp_repo, capsys):
     app = tmp_repo / "app"
     app.mkdir()

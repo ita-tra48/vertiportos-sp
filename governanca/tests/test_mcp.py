@@ -1,5 +1,7 @@
 import json
 
+import duckdb
+
 import banco
 import mcp_gov
 
@@ -24,6 +26,9 @@ def _semeia(monkeypatch):
                    {"titulo": "m", "status": "aberta"})
     banco.registra("aresta", "dec-000001",
                    {"relacao": "atende", "destino": "met-000001"})
+    banco._CON.close()
+    banco._CON = None
+    banco._CON_SOMENTE_LEITURA = None
 
 
 def test_initialize_e_tools_list(tmp_repo):
@@ -79,6 +84,44 @@ def test_tools_call_sem_params(tmp_repo):
     r = mcp_gov.despacha({"jsonrpc": "2.0", "id": 10, "method": "tools/call"})
     assert r["result"]["isError"] is True
     assert "ferramenta desconhecida" in _texto(r)
+
+
+def test_nao_segura_lock_rw_apos_chamada(tmp_repo, monkeypatch):
+    _semeia(monkeypatch)
+    _chama("consultar", {"sql": "SELECT count(*) AS n FROM decisao"})
+    assert banco._CON is None
+    con = duckdb.connect(str(banco.DB))
+    con.execute("INSERT INTO evento VALUES "
+               "('evt-lockteste', now(), 'Teste', 'meta', 'met-999999', "
+               "'{}')")
+    con.close()
+
+
+def test_despacha_reconstroi_banco_desatualizado(tmp_repo, monkeypatch):
+    import os
+    _semeia(monkeypatch)
+    stmt = ("INSERT INTO evento VALUES ('evt-dump001', '2026-01-01 00:00:00', "
+           "'Teste', 'meta', 'met-000002', "
+           "'{\"titulo\": \"meta via dump\", \"status\": \"aberta\"}');\n")
+    with banco.DUMP.open("a", encoding="utf-8") as fh:
+        fh.write(stmt)
+    futuro = banco.DUMP.stat().st_mtime + 10
+    os.utime(banco.DUMP, (futuro, futuro))
+    r = _chama("consultar", {"sql": "SELECT titulo FROM meta "
+                             "WHERE id = 'met-000002'"})
+    assert "meta via dump" in _texto(r)
+
+
+def test_no_com_registro_fantasma_da_erro_claro(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Teste")
+    banco.registra("aresta", "dec-fantasma",
+                   {"relacao": "atende", "destino": "met-000001"})
+    banco._CON.close()
+    banco._CON = None
+    banco._CON_SOMENTE_LEITURA = None
+    r = _chama("no", {"id": "dec-fantasma"})
+    assert r["result"]["isError"] is True
+    assert "sem registro para" in _texto(r)
 
 
 def test_servidor_json_invalido_nao_mata(tmp_repo):

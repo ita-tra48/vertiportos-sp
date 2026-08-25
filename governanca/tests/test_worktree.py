@@ -59,6 +59,28 @@ def test_recusa_no_que_nao_e_tarefa(tmp_repo, monkeypatch):
     assert gov.main(["worktree", "met-000001"]) == 2
 
 
+def test_worktree_usa_origin_base_quando_disponivel(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Teste")
+    banco.registra("tarefa", "tar-000004",
+                   {"titulo": "usar origin", "resp": "Ana",
+                    "status": "aberta"})
+    _repo_git(tmp_repo)
+    origem = tmp_repo.parent / "origin.git"
+    _git(tmp_repo, "clone", "--bare", str(tmp_repo), str(origem))
+    _git(tmp_repo, "remote", "add", "origin", str(origem))
+    clone = tmp_repo.parent / "clone-scratch"
+    _git(tmp_repo.parent, "clone", str(origem), str(clone))
+    _git(clone, "config", "user.name", "Teste")
+    _git(clone, "config", "user.email", "t@t")
+    (clone / "origin-extra.txt").write_text("y")
+    _git(clone, "add", "-A")
+    _git(clone, "commit", "-m", "so no origin")
+    _git(clone, "push", "origin", "main")
+    assert gov.main(["worktree", "tar-000004"]) == 0
+    destino = tmp_repo.parent / f"{tmp_repo.name}.worktrees" / "tar-000004"
+    assert (destino / "origin-extra.txt").is_file()
+
+
 def test_reconcilia_branch_se_worktree_existe_sem_payload(tmp_repo, monkeypatch):
     monkeypatch.setenv("GOV_AUTOR", "Teste")
     banco.registra("tarefa", "tar-000003",

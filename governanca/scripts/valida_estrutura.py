@@ -26,6 +26,16 @@ def bruto_alterado(raiz, base):
                   and not c.endswith(".gitkeep"))
 
 
+def dump_reescrito(raiz, base):
+    r = subprocess.run(
+        ["git", "diff", f"{base}...HEAD", "--", "governanca/dump.sql"],
+        cwd=raiz, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SystemExit(f"valida_estrutura: git diff falhou para base {base}: {r.stderr.strip()}")
+    return [linha for linha in r.stdout.splitlines()
+            if linha.startswith("-") and not linha.startswith("---")]
+
+
 def figuras_sem_gerador(raiz):
     pasta = raiz / "relatorio" / "figuras"
     if not pasta.is_dir():
@@ -53,6 +63,8 @@ def main(argv=None):
     if a.base:
         problemas += [f"alteracao proibida em dados/bruto: {c}"
                       for c in bruto_alterado(banco.RAIZ, a.base)]
+        problemas += [f"dump.sql nao e append-only: linha removida/reescrita: {c}"
+                      for c in dump_reescrito(banco.RAIZ, a.base)]
     problemas += [f"figura sem script gerador ligado no grafo: {c}"
                   for c in figuras_sem_gerador(banco.RAIZ)]
     for p in problemas:

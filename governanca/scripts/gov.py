@@ -303,7 +303,11 @@ def cmd_worktree(a):
         cmd = ["git", "worktree", "add", str(destino), branch]
     else:
         cmd = ["git", "worktree", "add", "-b", branch, str(destino)]
-        if _existe(a.base):
+        subprocess.run(["git", "fetch", "origin", a.base], cwd=banco.RAIZ,
+                       capture_output=True)
+        if _existe(f"origin/{a.base}"):
+            cmd.append(f"origin/{a.base}")
+        elif _existe(a.base):
             cmd.append(a.base)
     r = subprocess.run(cmd, cwd=banco.RAIZ, capture_output=True, text=True)
     if r.returncode != 0:

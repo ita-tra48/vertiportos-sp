@@ -1,11 +1,12 @@
 name: mach1-bot
 on:
   pull_request:
-    types: [opened, synchronize, ready_for_review]
+    types: [opened, ready_for_review]
 permissions:
   contents: read
   pull-requests: write
   issues: write
+  id-token: write
 jobs:
   revisa:
     if: ${{ !github.event.pull_request.draft }}
@@ -18,7 +19,14 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r governanca/requirements.txt
+      - id: token_mach1
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.MACH1_APP_ID }}
+          private-key: ${{ secrets.MACH1_APP_PRIVATE_KEY }}
       - uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ steps.token_mach1.outputs.token }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
@@ -27,3 +35,11 @@ jobs:
             Leia governanca/mach1/PROMPT.md e execute o protocolo sobre esta PR.
           claude_args: |
             --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(python governanca/scripts/gov.py rebuild),Bash(python governanca/scripts/gov.py contexto:*),Bash(python governanca/scripts/gov.py consulta:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
+      - if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          comentarios=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments --jq '.[].body')
+          if ! echo "$comentarios" | grep -q '^\*\*Mach1-Bot\*\*'; then
+            echo "::warning::mach1-bot nao publicou comentario nesta PR"
+          fi
