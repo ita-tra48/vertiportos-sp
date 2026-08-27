@@ -24,3 +24,5 @@ governanca/.venv/bin/pip install -r governanca/requirements.txt
 
 Depois disso o `.mcp.json` já conecta o Claude Code ao servidor MCP `gov`
 automaticamente.
+
+Site do projeto: https://ita-tra48.github.io/vertiportos-sp/
