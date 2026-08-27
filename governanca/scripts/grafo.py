@@ -24,12 +24,16 @@ def coleta(con):
            for r in con.execute(
                "SELECT entidade_id, tipo, coalesce("
                "payload->>'titulo', payload->>'variante', "
-               "payload->>'proposito') FROM no ORDER BY tipo, entidade_id"
+               "payload->>'proposito') FROM no "
+               "WHERE payload->>'interno' IS DISTINCT FROM 'true' "
+               "ORDER BY tipo, entidade_id"
            ).fetchall()]
+    ids = {n["id"] for n in nos}
     arestas = [{"origem": r[0], "relacao": r[1], "destino": r[2]}
                for r in con.execute(
                    "SELECT origem, relacao, destino FROM aresta "
-                   "ORDER BY origem, relacao, destino").fetchall()]
+                   "ORDER BY origem, relacao, destino").fetchall()
+               if r[0] in ids and r[2] in ids]
     return nos, arestas
 
 
@@ -109,6 +113,7 @@ def dados_nos(con):
         "SELECT n.entidade_id, n.tipo, c.criado_por, "
         "strftime(c.criado_em, '%Y-%m-%d %H:%M'), n.payload "
         "FROM no n JOIN criacao c USING (entidade_id) "
+        "WHERE n.payload->>'interno' IS DISTINCT FROM 'true' "
         "ORDER BY n.entidade_id").fetchall()
     arestas = con.execute(
         "SELECT origem, relacao, destino FROM aresta "
@@ -126,12 +131,13 @@ def dados_nos(con):
         nos.append({"id": eid, "tipo": tipo, "titulo": titulo,
                     "autor": autor, "criado_em": criado_em,
                     "status": status, "campos": campos})
+    ids = {n["id"] for n in nos}
     bloqueados = {destino for origem, relacao, destino in arestas
                  if relacao == "bloqueia" and status_por_id.get(origem) == "aberta"}
     for no in nos:
         no["concluido"] = no["status"] in CONCLUIDOS and no["id"] not in bloqueados
     arestas_saida = [{"origem": o, "relacao": r, "destino": d}
-                     for o, r, d in arestas]
+                     for o, r, d in arestas if o in ids and d in ids]
     return nos, arestas_saida
 
 
@@ -188,6 +194,9 @@ gap:2px 8px}
 .grafo-tooltip dt{opacity:.7}
 .grafo-tooltip dd{margin:0;overflow-wrap:anywhere}
 .grafo-no{cursor:pointer}
+.grafo-rotulo{display:none}
+.grafo-no:hover .grafo-rotulo,.grafo-no:focus .grafo-rotulo,
+.grafo-no.grafo-mostra-rotulo .grafo-rotulo{display:block}
 .grafo-no.grafo-brilho{animation:grafobrilho 2.4s ease-in-out infinite}
 @keyframes grafobrilho{0%,100%{filter:drop-shadow(0 0 0 currentColor)}
 50%{filter:drop-shadow(0 0 6px currentColor)}}
@@ -284,6 +293,7 @@ function aplicaSelecao(){
     var destaque = !selecionado || id === selecionado
       || vizinhos[selecionado].has(id);
     elGrupo[id].style.opacity = destaque ? '1' : '0.15';
+    elGrupo[id].classList.toggle('grafo-mostra-rotulo', destaque && !!selecionado);
   });
   arestas.forEach(function(a, i){
     var destaque = !selecionado || a.origem === selecionado
@@ -291,10 +301,13 @@ function aplicaSelecao(){
     elLinha[i].style.opacity = destaque ? '0.8' : '0.15';
   });
 }
-function alternaSelecao(id){
-  if (selecionado === id) { window.location.href = 'trilha.html#' + id; return; }
+function selecionaSemNavegar(id){
   selecionado = id;
   aplicaSelecao();
+}
+function alternaSelecao(id){
+  if (selecionado === id) { window.location.href = 'trilha.html#' + id; return; }
+  selecionaSemNavegar(id);
 }
 Object.keys(nos).forEach(function(id){
   var no = nos[id];
@@ -313,6 +326,7 @@ Object.keys(nos).forEach(function(id){
   circulo.setAttribute('stroke', '#fbfbf9');
   circulo.setAttribute('stroke-width', '2');
   var texto = document.createElementNS(NS, 'text');
+  texto.setAttribute('class', 'grafo-rotulo');
   texto.setAttribute('font-size', '11');
   texto.setAttribute('fill', '#14181c');
   texto.setAttribute('x', '13');
@@ -439,6 +453,8 @@ function passo(){
 requestAnimationFrame(passo);
 aplicaSelecao();
 aplicaFiltros();
+var alvo = decodeURIComponent(window.location.hash.slice(1));
+if (alvo && nos[alvo]) { selecionaSemNavegar(alvo); }
 })();
 </script>"""
 

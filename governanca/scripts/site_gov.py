@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import subprocess
 from html import escape
 from pathlib import Path
 
@@ -24,10 +25,13 @@ PAGINAS = (("index.html", "Grafo executivo"),
            ("estado.html", "Estado"),
            ("trilha.html", "Trilha"),
            ("tarefas.html", "Tarefas e pendências"),
+           ("integrantes.html", "Integrantes"),
            ("ia.html", "Interações com IA"),
            ("experimentos.html", "Experimentos"),
            ("resultados.html", "Resultados"),
            ("reprodutibilidade.html", "Reprodutibilidade"))
+
+INTEGRANTES = banco.RAIZ / "governanca" / "integrantes.json"
 
 _ID = re.compile(r"(?:met|tar|pen|dec|fon|arq|ref|exp|ia|evt)-[0-9a-z]{6}")
 _QUANDO = re.compile(r"\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2})?")
@@ -44,9 +48,6 @@ CAMPOS = {"titulo": "título", "desc": "descrição", "just": "justificativa",
           "retorno": "retorno", "aceito": "aceite",
           "critica": "crítica humana", "relacao": "relação",
           "destino": "destino", "branch": "branch"}
-
-_ROTULO_SELO = {"verde": "APROVADO", "vermelho": "REPROVADO",
-                "cinza": "NÃO AUDITADO"}
 
 _ACEITE = {"integral": "integral", "parcial": "em parte",
            "descarte": "descartada"}
@@ -204,6 +205,17 @@ overflow-x:auto;font:.82rem/1.7 var(--mono);margin:0 0 calc(var(--u)*1.5)}
 code{font:.86em var(--mono);background:#f3f4f6;padding:1px 4px;
 border:1px solid var(--fio)}
 a{color:var(--anil);text-underline-offset:3px}
+.integrante h3{font:700 .72rem/1.5 var(--mono);letter-spacing:.06em;
+text-transform:uppercase;color:var(--nanquim2);
+margin:calc(var(--u)*1.5) 0 4px}
+.trilha-filtros{display:flex;flex-wrap:wrap;gap:calc(var(--u)*1.5);
+margin-bottom:calc(var(--u)*2)}
+.trilha-dia{font:700 .78rem/1.4 var(--mono);letter-spacing:.08em;
+text-transform:uppercase;color:var(--anil);
+margin:calc(var(--u)*3) 0 var(--u);padding-bottom:4px;
+border-bottom:1px solid var(--nanquim)}
+.reg.commit{background:#f3f4f6;border-left:3px solid var(--grafite)}
+.reg.commit p{margin:4px 0 0;font-size:.88rem}
 .grafo-moldura{border:1px solid var(--fio);overflow:auto;background:#fdfdfc}
 .rodape{padding:calc(var(--u)*2) calc(var(--u)*3);border-top:1px solid var(--fio);
 font:.74rem/1.6 var(--mono);color:var(--grafite);
@@ -280,7 +292,6 @@ def _bloco_titulo(m):
             f'<dt>Projeto</dt><dd>B1 · PO</dd>'
             f'<dt>Revisão</dt><dd>{_esc(revisao)}</dd>'
             f'<dt>Registros</dt><dd>{m["registros"]}</dd>'
-            f'<dt>Auditoria</dt><dd>{_esc(_ROTULO_SELO[m["selo"][0]])}</dd>'
             f'</dl>')
 
 
@@ -372,42 +383,134 @@ def _estado(con, m):
             f'<h2>Últimas decisões</h2>{decisoes}')
 
 
+def _commits():
+    try:
+        saida = subprocess.run(
+            ["git", "log", "--format=%h\x1f%ad\x1f%an\x1f%s",
+             "--date=format:%Y-%m-%d %H:%M"],
+            cwd=banco.RAIZ, capture_output=True, text=True,
+            check=False).stdout
+    except OSError:
+        return []
+    commits = []
+    for linha in saida.splitlines():
+        partes = linha.split("\x1f")
+        if len(partes) == 4:
+            commits.append(tuple(partes))
+    return commits
+
+
+def _rotulo_tipo(tipo):
+    extras = {"aresta": "arestas", "commit": "commits"}
+    return grafo.ROTULOS.get(tipo, extras.get(tipo, tipo))
+
+
+def _chips(valores, atributo):
+    return "".join(
+        f'<button type="button" class="grafo-chip ativo" '
+        f'data-{atributo}="{_esc(v)}">{_esc(r)}</button>'
+        for v, r in valores)
+
+
 def _trilha(con):
     linhas = con.execute(
         "SELECT strftime(ts, '%Y-%m-%d %H:%M'), autor, tipo, entidade_id, "
         "evento_id, payload FROM evento ORDER BY ts DESC, evento_id DESC"
         ).fetchall()
-    if not linhas:
+    commits = _commits()
+    if not linhas and not commits:
         return ('<p class="limpo">Nenhum evento registrado. A trilha é '
                 'alimentada por cada comando ./gov.</p>')
+    itens = ([(ts, "evento", (autor, tipo, eid, evid, payload))
+              for ts, autor, tipo, eid, evid, payload in linhas]
+             + [(quando, "commit", (autor, h, msg))
+                for h, quando, autor, msg in commits])
+    itens.sort(key=lambda item: item[0], reverse=True)
+
+    tipos = sorted({d[1] if k == "evento" else "commit" for _, k, d in itens})
+    autores = sorted({d[0] for _, k, d in itens})
+    filtros = (
+        f'<div class="trilha-filtros">'
+        f'<div class="grafo-legenda">'
+        f'{_chips([(t, _rotulo_tipo(t)) for t in tipos], "tipo")}</div>'
+        f'<div class="grafo-legenda">'
+        f'{_chips([(a, a) for a in autores], "autor")}</div></div>')
+
     vistos = set()
     blocos = []
-    for ts, autor, tipo, eid, evid, payload in linhas:
+    dia_atual = None
+    for ts, kind, dados in itens:
+        dia = ts[:10]
+        if dia != dia_atual:
+            dia_atual = dia
+            blocos.append(f'<h2 class="trilha-dia">{_esc(dia)}</h2>')
+        if kind == "commit":
+            autor, h, msg = dados
+            blocos.append(
+                f'<section class="reg commit" data-tipo="commit" '
+                f'data-autor="{_esc(autor)}">'
+                f'<h3><span class="sigla">GIT</span><time>{_esc(ts)}</time>'
+                f'<span class="ident">{_esc(h)}</span>'
+                f'<span class="quem">{_esc(autor)}</span></h3>'
+                f'<p>{_esc(msg)}</p></section>')
+            continue
+        autor, tipo, eid, evid, payload = dados
         primeiro = eid not in vistos
         vistos.add(eid)
         ancora = eid if primeiro else evid
-        dados = json.loads(payload)
+        dj = json.loads(payload)
         cabeca = (f'<span class="sigla">{_esc(SIGLAS.get(tipo, tipo))}</span>'
                   f'<time>{_esc(ts)}</time>')
         if tipo == "aresta":
             blocos.append(
-                f'<section class="reg aresta" id="{_esc(ancora)}">'
+                f'<section class="reg aresta" data-tipo="aresta" '
+                f'data-autor="{_esc(autor)}" id="{_esc(ancora)}">'
                 f'<h3>{cabeca}'
                 f'<span class="ident">{_esc(eid)}</span>'
-                f'<span class="rel">{_esc(dados.get("relacao", ""))}</span>'
-                f'<span class="ident">{_esc(dados.get("destino", ""))}</span>'
+                f'<span class="rel">{_esc(dj.get("relacao", ""))}</span>'
+                f'<span class="ident">{_esc(dj.get("destino", ""))}</span>'
                 f'<span class="quem">{_esc(autor)}</span></h3></section>')
             continue
         campos = "".join(
-            _campo(k, v) for k, v in sorted(dados.items())
+            _campo(k, v) for k, v in sorted(dj.items())
             if v not in (None, "", [], {}))
         blocos.append(
-            f'<section class="reg" id="{_esc(ancora)}">'
+            f'<section class="reg" data-tipo="{_esc(tipo)}" '
+            f'data-autor="{_esc(autor)}" id="{_esc(ancora)}">'
             f'<h3>{cabeca}'
             f'<span class="ident">{_esc(eid)}</span>'
             f'<span class="quem">{_esc(autor)}</span></h3>'
             f'<dl>{campos}</dl></section>')
-    return "".join(blocos)
+    return filtros + "".join(blocos) + _SCRIPT_TRILHA
+
+
+_SCRIPT_TRILHA = """<script>
+(function(){
+var ocultoTipo = {}, ocultoAutor = {};
+function aplica(){
+  document.querySelectorAll('.reg[data-tipo]').forEach(function(el){
+    var ok = !ocultoTipo[el.dataset.tipo] && !ocultoAutor[el.dataset.autor];
+    el.style.display = ok ? '' : 'none';
+  });
+}
+document.querySelectorAll('.trilha-filtros [data-tipo]').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    var v = chip.dataset.tipo;
+    if (ocultoTipo[v]) { delete ocultoTipo[v]; chip.classList.add('ativo'); }
+    else { ocultoTipo[v] = true; chip.classList.remove('ativo'); }
+    aplica();
+  });
+});
+document.querySelectorAll('.trilha-filtros [data-autor]').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    var v = chip.dataset.autor;
+    if (ocultoAutor[v]) { delete ocultoAutor[v]; chip.classList.add('ativo'); }
+    else { ocultoAutor[v] = true; chip.classList.remove('ativo'); }
+    aplica();
+  });
+});
+})();
+</script>"""
 
 
 def _tarefas(con):
@@ -427,6 +530,45 @@ def _tarefas(con):
             f'terceiro ou de definição. Uma pendência aberta há muito tempo '
             f'reprova o selo de auditoria.</p>'
             f'{pendencias}')
+
+
+def _lista_links(con, sql, params, vazio="sem registros ainda"):
+    linhas = con.execute(sql, params).fetchall()
+    if not linhas:
+        return f'<p class="limpo">{_esc(vazio)}</p>'
+    itens = "".join(
+        f'<li><a href="index.html#{_esc(eid)}">{_esc(titulo)}</a></li>'
+        for eid, titulo in linhas)
+    return f'<ul class="lista">{itens}</ul>'
+
+
+def _integrante(con, nome):
+    abertas = _lista_links(con,
+        "SELECT id, titulo FROM tarefa WHERE resp = ? AND status = 'aberta' "
+        "ORDER BY prazo NULLS LAST, id", [nome])
+    concluidas = _lista_links(con,
+        "SELECT id, titulo FROM tarefa WHERE resp = ? AND status <> 'aberta' "
+        "ORDER BY id", [nome])
+    pendencias = _lista_links(con,
+        "SELECT id, titulo FROM pendencia WHERE criado_por = ? "
+        "ORDER BY criado_em, id", [nome])
+    registros = _lista_links(con,
+        "SELECT n.entidade_id, coalesce(n.payload->>'titulo', "
+        "n.payload->>'variante', n.payload->>'proposito', n.entidade_id) "
+        "FROM no n JOIN criacao c USING (entidade_id) WHERE c.criado_por = ? "
+        "ORDER BY c.criado_em DESC, n.entidade_id DESC LIMIT 5", [nome])
+    return (f'<section class="integrante">'
+            f'<h2>{_esc(nome)}</h2>'
+            f'<h3>Tarefas abertas</h3>{abertas}'
+            f'<h3>Tarefas concluídas</h3>{concluidas}'
+            f'<h3>Pendências criadas</h3>{pendencias}'
+            f'<h3>Últimos registros</h3>{registros}'
+            f'</section>')
+
+
+def _integrantes(con):
+    nomes = list(dict.fromkeys(json.loads(INTEGRANTES.read_text()).values()))
+    return "".join(_integrante(con, nome) for nome in nomes)
 
 
 def _ia(con, m):
@@ -522,6 +664,7 @@ def gera(destino=None):
         "estado.html": _estado(con, m),
         "trilha.html": _trilha(con),
         "tarefas.html": _tarefas(con),
+        "integrantes.html": _integrantes(con),
         "ia.html": _ia(con, m),
         "experimentos.html": _experimentos(con),
         "resultados.html": _resultados(con),
