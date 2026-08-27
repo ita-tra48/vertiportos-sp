@@ -30,11 +30,11 @@ def cenario(tmp_repo, monkeypatch):
     return tmp_repo
 
 
-def test_gera_as_oito_paginas(cenario):
+def test_gera_as_nove_paginas(cenario):
     destino = site_gov.gera(cenario / "governanca" / "site")
     nomes = {p.name for p in destino.glob("*.html")}
     assert nomes == {a for a, _ in site_gov.PAGINAS} | {"grafo.html"}
-    assert len(site_gov.PAGINAS) == 8
+    assert len(site_gov.PAGINAS) == 9
 
 
 def test_index_e_o_grafo(cenario):
@@ -168,3 +168,49 @@ def test_gera_normal_produz_css_e_nojekyll(cenario):
     destino = site_gov.gera(cenario / "governanca" / "site")
     nomes = {p.name for p in destino.iterdir()}
     assert {a for a, _ in site_gov.PAGINAS} | {"estilo.css", ".nojekyll"} <= nomes
+
+
+def test_cabecalho_sem_auditoria(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "estado.html").read_text()
+    cabeca = html[html.index('class="cabeca"'):html.index("</header>")]
+    assert "Auditoria" not in cabeca
+
+
+def test_no_interno_fora_do_index_mas_na_trilha(cenario):
+    con = banco.conecta()
+    did = con.execute("SELECT id FROM decisao").fetchone()[0]
+    roda("patch", did, "interno=true")
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    index = (destino / "index.html").read_text()
+    trilha = (destino / "trilha.html").read_text()
+    assert did not in index
+    assert f'id="{did}"' in trilha
+
+
+def test_integrantes_lista_os_quatro_nomes_com_links(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "integrantes.html").read_text()
+    for nome in ("Gustavo", "Matheus", "Italo", "Carlos"):
+        assert nome in html
+    assert 'href="index.html#' in html
+
+
+def test_integrante_sem_registros_mostra_mensagem(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "integrantes.html").read_text()
+    assert "sem registros ainda" in html
+
+
+def test_trilha_agrupa_por_dia(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "trilha.html").read_text()
+    assert 'class="trilha-dia"' in html
+
+
+def test_trilha_tem_filtros_de_tipo_e_autor(cenario):
+    destino = site_gov.gera(cenario / "governanca" / "site")
+    html = (destino / "trilha.html").read_text()
+    assert 'data-tipo=' in html
+    assert 'data-autor=' in html
+    assert "trilha-filtros" in html
