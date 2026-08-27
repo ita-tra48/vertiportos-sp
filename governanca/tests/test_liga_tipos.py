@@ -63,6 +63,9 @@ PARES_VALIDOS = [
     ("bloqueia", "pendencia", "meta"),
     ("informa", "ia", "decisao1"),
     ("informa", "ia", "arquivo1"),
+    ("informa", "ia", "tarefa"),
+    ("refina", "decisao1", "decisao2"),
+    ("afeta", "pendencia", "decisao1"),
 ]
 
 
@@ -88,6 +91,22 @@ def test_liga_recusa_destino_de_tipo_errado(nos):
 def test_liga_recusa_origem_de_tipo_errado(nos):
     arquivo, meta = nos["arquivo1"], nos["meta"]
     assert roda("liga", arquivo, "atende", meta) == 2
+    con = banco.conecta()
+    assert con.execute(
+        "SELECT count(*) FROM aresta").fetchone()[0] == 0
+
+
+def test_liga_recusa_refina_com_destino_de_tipo_errado(nos):
+    decisao, arquivo = nos["decisao1"], nos["arquivo1"]
+    assert roda("liga", decisao, "refina", arquivo) == 2
+    con = banco.conecta()
+    assert con.execute(
+        "SELECT count(*) FROM aresta").fetchone()[0] == 0
+
+
+def test_liga_recusa_afeta_com_origem_de_tipo_errado(nos):
+    tarefa, decisao = nos["tarefa"], nos["decisao1"]
+    assert roda("liga", tarefa, "afeta", decisao) == 2
     con = banco.conecta()
     assert con.execute(
         "SELECT count(*) FROM aresta").fetchone()[0] == 0
