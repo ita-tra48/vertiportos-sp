@@ -25,10 +25,9 @@ jobs:
           app-id: ${{ secrets.MACH1_APP_ID }}
           private-key: ${{ secrets.MACH1_APP_PRIVATE_KEY }}
       - uses: anthropics/claude-code-action@v1
-        env:
-          GH_TOKEN: ${{ steps.token_mach1.outputs.token }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ steps.token_mach1.outputs.token }}
           prompt: |
             REPO: ${{ github.repository }}
             PR: ${{ github.event.pull_request.number }}

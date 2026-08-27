@@ -19,7 +19,11 @@ Variáveis: o número da PR e o repositório chegam no prompt do workflow.
    `dados/bruto/`, figura sem script gerador.
 5. Cheque coerência com a governança: o diff faz o que a tarefa/decisão
    citada diz? A decisão está `vigente`? Experimento reportado bate com o
-   registro?
+   registro? Se a PR executa uma tarefa (`tar-` nos Registros) e o trabalho
+   foi feito com IA (autor bot, ou descrição declara), verifique se existe
+   registro `ia-` ligado por `informa` à tarefa (`python
+   governanca/scripts/gov.py contexto TAR-ID`). Ausente: aponte como
+   violação do processo de IA (docs/ARQUITETURA.md).
 6. Publique UM único comentário (`gh pr comment N --body ...`) começando
    por `**Mach1-Bot**`, contendo: incongruências (com `arquivo:linha`),
    o que está conforme, e um checklist do PADRAO_PR. Direto, sem elogio
