@@ -38,3 +38,8 @@ ANAC (dados estatísticos, VRA), DECEA, BTS/T-100 (EUA), OpenSky.
 - Arquitetura de código: `docs/ARQUITETURA.md`. Descrição de PR:
   `docs/PADRAO_PR.md`. Toda interação de IA que chega ao produto vira
   `./gov ia --critica "..."` antes do commit.
+- Toda tarefa executada com IA fecha com `./gov ia` (pedido, retorno, aceite e
+  crítica humana do responsável) ligado à tarefa por `informa`. A crítica é
+  escrita pelo humano — IA não critica o próprio trabalho.
+- Toda discussão de projeto vira registro (`decisao` com justificativa e
+  alternativas, ou `pendencia`) no momento em que acontece.

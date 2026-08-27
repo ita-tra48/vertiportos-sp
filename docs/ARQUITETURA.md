@@ -35,3 +35,8 @@ Quase zero. Só o que o código não diz sozinho. Contexto, justificativa e
 Toda decisão metodológica, fonte, experimento e interação com IA vira
 registro via `./gov` **antes** do commit que a materializa. PR sem ids de
 registro na descrição é devolvida (ver docs/PADRAO_PR.md).
+
+Trabalho executado com IA: ao fechar a tarefa, registrar `./gov ia` com a
+crítica humana do responsável e ligar por `informa` à tarefa (`./gov liga
+IA-ID informa TAR-ID`). PR que executa tarefa feita com IA sem `ia-`
+correspondente é devolvida.
