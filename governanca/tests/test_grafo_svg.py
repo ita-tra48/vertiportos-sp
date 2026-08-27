@@ -189,3 +189,44 @@ def test_aplica_filtros_esconde_tooltip(cenario):
     html = grafo.pagina_home(con)
     trecho = html[html.index("function aplicaFiltros(){"):]
     assert trecho.split("\n")[1].strip() == "escondeTooltip();"
+
+
+def test_rotulo_oculto_por_padrao_no_css():
+    assert ".grafo-rotulo{display:none}" in grafo.ESTILO_HOME
+
+
+def test_rotulo_aparece_ao_selecionar(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    assert "grafo-mostra-rotulo" in html
+    assert "class', 'grafo-rotulo'" in html
+
+
+def test_deep_link_seleciona_no_id_da_url(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    assert "window.location.hash" in html
+    assert "selecionaSemNavegar" in html
+
+
+def test_no_interno_fica_fora_do_coleta(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("decisao", "Decisao interna", "--just", "porque X")
+    con = banco.conecta()
+    did = con.execute("SELECT id FROM decisao").fetchone()[0]
+    roda("patch", did, "interno=true")
+    con = banco.conecta()
+    nos, _ = grafo.coleta(con)
+    assert did not in {n["id"] for n in nos}
+
+
+def test_no_interno_fica_fora_do_dados_nos(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("decisao", "Decisao interna", "--just", "porque X")
+    con = banco.conecta()
+    did = con.execute("SELECT id FROM decisao").fetchone()[0]
+    roda("patch", did, "interno=true")
+    con = banco.conecta()
+    nos, _ = grafo.dados_nos(con)
+    assert did not in {n["id"] for n in nos}
+    assert did not in grafo.json_dados(con)
