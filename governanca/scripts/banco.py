@@ -28,7 +28,9 @@ RELACOES = {
     "apoia": ({"experimento"}, {"arquivo"}),
     "deriva": ({"arquivo"}, {"decisao"}),
     "bloqueia": ({"pendencia"}, {"tarefa", "meta"}),
-    "informa": ({"ia"}, {"decisao", "arquivo"}),
+    "informa": ({"ia"}, {"decisao", "arquivo", "tarefa"}),
+    "refina": ({"decisao"}, {"decisao"}),
+    "afeta": ({"pendencia"}, {"decisao"}),
 }
 
 _ALFABETO = "0123456789abcdefghijklmnopqrstuvwxyz"
