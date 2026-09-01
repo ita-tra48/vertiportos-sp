@@ -1,0 +1,280 @@
+id_candidato,camada,infra_aeronautica,nome,lat,lon,tipo_local,tlof_m,resistencia_t,op_diurna,op_noturna,apto_triagem,motivo_exclusao,agrupamento_id,representante_agrupamento,fonte,fonte_id,codigo_oaci
+CAN-0001,heliponto,existente,Aché Faria Lima,-23.560833,-46.694167,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0001,TRUE,anac_helipontos,SP0335,SDGG
+CAN-0002,heliponto,existente,Akron,-23.609167,-46.605833,Elevado,19.6,3,VFR,,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0002,TRUE,anac_helipontos,SP0829,SWSK
+CAN-0003,heliponto,existente,Alice Maria Sampaio Ferreira,-23.611111,-46.694167,Elevado,18,4,VFR,VFR,TRUE,,CAN-0003,TRUE,anac_helipontos,SP0678,SJXP
+CAN-0004,heliponto,existente,Arena Corinthians,-23.544167,-46.477778,No solo,21,5,VFR,VFR,TRUE,,CAN-0004,TRUE,anac_helipontos,SP1309,SBOP
+CAN-0005,heliponto,existente,Atrium VI.Com,-23.595556,-46.6875,Elevado,21,4,VFR,VFR,TRUE,,CAN-0005,TRUE,anac_helipontos,SP0600,SJBP
+CAN-0006,heliponto,existente,Attilio Tinelli,-23.6025,-46.693611,Elevado,19.5,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0006,TRUE,anac_helipontos,SP0399,SDOT
+CAN-0007,heliponto,existente,Avenida Consolação 1601,-23.551389,-46.655556,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0007,TRUE,anac_helipontos,SP0864,SS4B
+CAN-0008,heliponto,existente,Banco Bradesco Av. Paulista,-23.562222,-46.655,Elevado,18,4,VFR,VFR,TRUE,,CAN-0008,TRUE,anac_helipontos,SP0386,SDMT
+CAN-0009,heliponto,existente,Banco Induscred,-23.564167,-46.655556,Elevado,19.8,4,VFR,VFR,TRUE,,CAN-0009,TRUE,anac_helipontos,SP0466,SIBG
+CAN-0010,heliponto,existente,Banco Industrial,-23.591944,-46.685556,Elevado,20,4,VFR,Sem Operação,TRUE,,CAN-0010,TRUE,anac_helipontos,SP0292,SDAW
+CAN-0011,heliponto,existente,Banco Safra,-23.558056,-46.659722,Elevado,24,6,VFR,VFR,TRUE,,CAN-0011,TRUE,anac_helipontos,SP0421,SDSZ
+CAN-0012,heliponto,existente,Banco Santander,-23.590833,-46.690833,Elevado,21,4,VFR,VFR,TRUE,,CAN-0012,TRUE,anac_helipontos,SP0808,SWHH
+CAN-0013,heliponto,existente,Banco Santander,-23.652222,-46.713889,Elevado,21,4,VFR,VFR,TRUE,,CAN-0013,TRUE,anac_helipontos,SP0391,SDNR
+CAN-0014,heliponto,existente,Banco Sofisa,-23.562778,-46.655833,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0008,FALSE,anac_helipontos,SP0792,SSZE
+CAN-0015,heliponto,existente,Bandeirantes,-23.595,-46.710556,Elevado,18,3,VFR,Sem Operação,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0015,TRUE,anac_helipontos,SP0296,SDBH
+CAN-0016,heliponto,existente,Bela Cintra,-23.553889,-46.658611,Elevado,18,4,VFR,VFR,TRUE,,CAN-0016,TRUE,anac_helipontos,SP0692,SNBQ
+CAN-0017,heliponto,existente,Beneficência Portuguesa,-23.567778,-46.641389,Elevado,20,4,VFR,VFR,TRUE,,CAN-0017,TRUE,anac_helipontos,SP0298,SDBM
+CAN-0018,heliponto,existente,Berrini One,-23.598333,-46.690556,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0018,TRUE,anac_helipontos,SP0554,SITO
+CAN-0019,heliponto,existente,Bertolucci,-23.585833,-46.680278,Elevado,18,4,VFR,VFR,TRUE,,CAN-0019,TRUE,anac_helipontos,SP0339,SDGS
+CAN-0020,heliponto,existente,Birmann 21,-23.565278,-46.702222,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0020,TRUE,anac_helipontos,SP0389,SDNN
+CAN-0021,heliponto,existente,Birmann 29,-23.588611,-46.681111,Elevado,24,6,VFR,VFR,TRUE,,CAN-0021,TRUE,anac_helipontos,SP0309,SDDH
+CAN-0022,heliponto,existente,Birmann 31,-23.59,-46.681944,Elevado,21,4,VFR,VFR,TRUE,,CAN-0022,TRUE,anac_helipontos,SP0594,SJBG
+CAN-0023,heliponto,existente,Birmann 32,-23.589167,-46.6825,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0022,FALSE,anac_helipontos,SP1428,SN66
+CAN-0024,heliponto,existente,Blue Tree Tower Faria Lima,-23.591111,-46.680833,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0024,TRUE,anac_helipontos,SP0764,SSOA
+CAN-0025,heliponto,existente,Brascan Century Plaza,-23.584167,-46.675556,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0025,TRUE,anac_helipontos,SP0506,SIIR
+CAN-0026,heliponto,existente,C.T.O. Itaú,-23.557778,-46.615556,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0026,TRUE,anac_helipontos,SP0694,SNDK
+CAN-0027,heliponto,existente,CYK,-23.566111,-46.651667,Elevado,21,5,VFR,VFR,TRUE,,CAN-0027,TRUE,anac_helipontos,SP0440,SDWB
+CAN-0028,heliponto,existente,Carmo Couri,-23.596667,-46.685278,Elevado,18,4,VFR,Sem Operação,TRUE,,CAN-0028,TRUE,anac_helipontos,SP0449,SDYA
+CAN-0029,heliponto,existente,Centro Empresarial Iudice,-23.513611,-46.694722,Elevado,20,4,VFR,VFR,TRUE,,CAN-0029,TRUE,anac_helipontos,SP0430,SDUI
+CAN-0030,heliponto,existente,Centro Empresarial Nações Unidas-Torre Norte,-23.610278,-46.696389,Elevado,19.5,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0030,TRUE,anac_helipontos,SP0730,SNSQ
+CAN-0031,heliponto,existente,Centro Empresarial de São Paulo,-23.650833,-46.727778,Elevado,21,5,VFR,Sem Operação,TRUE,,CAN-0031,TRUE,anac_helipontos,SP0774,SSQY
+CAN-0032,heliponto,existente,Cetenco Plaza - Torre Norte,-23.558611,-46.6575,Elevado,18,3,VFR,Sem Operação,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0032,TRUE,anac_helipontos,SP0348,SDHT
+CAN-0033,heliponto,existente,Cidade,-23.545833,-46.6325,Elevado,21,4.25,VFR,VFR,TRUE,,CAN-0033,TRUE,anac_helipontos,SP0353,SDIA
+CAN-0034,heliponto,existente,Citibank,-23.565,-46.653611,Elevado,19.6,4,VFR,VFR,TRUE,,CAN-0034,TRUE,anac_helipontos,SP0306,SDCV
+CAN-0035,heliponto,existente,Comando G8,-23.472778,-46.639722,Elevado,18,1.5,VFR,Sem Operação,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0035,TRUE,anac_helipontos,SP1297,SI8S
+CAN-0036,heliponto,existente,Cometa Vila Maria,-23.517222,-46.579167,Elevado,20,4,VFR,VFR,TRUE,,CAN-0036,TRUE,anac_helipontos,SP0672,SJWC
+CAN-0037,heliponto,existente,Company,-23.572778,-46.703333,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0037,TRUE,anac_helipontos,SP1280,SI74
+CAN-0038,heliponto,existente,Conde Francisco Matarazzo,-23.563333,-46.652778,Elevado,24,6,VFR,VFR,TRUE,,CAN-0038,TRUE,anac_helipontos,SP0437,SDVU
+CAN-0039,heliponto,existente,Condomínio América Business Park,-23.618611,-46.703056,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0039,TRUE,anac_helipontos,SP0370,SDKD
+CAN-0040,heliponto,existente,Condomínio Conde Matarazzo,-23.5475,-46.6375,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0040,TRUE,anac_helipontos,SP0390,SDNP
+CAN-0041,heliponto,existente,Condomínio Edifício Berrini 1681,-23.611389,-46.694444,Elevado,18,4.5,VFR,VFR,TRUE,,CAN-0003,FALSE,anac_helipontos,SP0580,SIYZ
+CAN-0042,heliponto,existente,Condomínio Edifício Paulista Plaza,-23.573611,-46.641667,Elevado,18,4,VFR,VFR,TRUE,,CAN-0042,TRUE,anac_helipontos,SP0495,SIGO
+CAN-0043,heliponto,existente,Condomínio Edifício San Paolo,-23.575,-46.687778,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0043,TRUE,anac_helipontos,SP0332,SDFW
+CAN-0044,heliponto,existente,Condomínio Edifício Spazio JK,-23.591111,-46.685556,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0010,FALSE,anac_helipontos,SP0319,SDEL
+CAN-0045,heliponto,existente,Condomínio Faria Lima - Pinheiros,-23.569444,-46.691111,Elevado,19.9,4,VFR,VFR,TRUE,,CAN-0045,TRUE,anac_helipontos,SP0548,SIRZ
+CAN-0046,heliponto,existente,Conjunto Hospitalar do Mandaqui,-23.485,-46.630556,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0046,TRUE,anac_helipontos,SP0812,SWHX
+CAN-0047,heliponto,existente,Continental Square,-23.595833,-46.683889,Elevado,21,6,VFR,VFR,TRUE,,CAN-0047,TRUE,anac_helipontos,SP0745,SSCS
+CAN-0048,heliponto,existente,Continental Tower,-23.601667,-46.699167,Elevado,30,10,VFR,VFR,TRUE,,CAN-0048,TRUE,anac_helipontos,SP0385,SDMN
+CAN-0049,heliponto,existente,DIMEP,-23.529444,-46.744167,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0049,TRUE,anac_helipontos,SP0534,SIOD
+CAN-0050,heliponto,existente,DJY,-23.5975,-46.685278,Elevado,18,4,VFR,VFR,TRUE,,CAN-0028,FALSE,anac_helipontos,SP0327,SDFM
+CAN-0051,heliponto,existente,Divena,-23.598333,-46.622222,Elevado,21,4,VFR,VFR,TRUE,,CAN-0051,TRUE,anac_helipontos,SP0499,SIHD
+CAN-0052,heliponto,existente,E-Business Bosque,-23.511667,-46.71,Elevado,24,6,VFR,VFR,TRUE,,CAN-0052,TRUE,anac_helipontos,SP0470,SIBS
+CAN-0053,heliponto,existente,E-Tower,-23.593889,-46.690278,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0053,TRUE,anac_helipontos,SP0676,SJWZ
+CAN-0054,heliponto,existente,EDIFÍCIO CORPORATE PARK,-23.587222,-46.672222,Elevado,22,5,VFR,VFR,TRUE,,CAN-0054,TRUE,anac_helipontos,SP0529,SIMM
+CAN-0055,heliponto,existente,EZ Towers A,-23.626944,-46.7025,Elevado,24,15,VFR,VFR,TRUE,,CAN-0055,TRUE,anac_helipontos,SP0574,SIXS
+CAN-0056,heliponto,existente,EZ Towers B,-23.627222,-46.701667,Elevado,24,15,VFR,VFR,TRUE,,CAN-0055,FALSE,anac_helipontos,SP0599,SJBO
+CAN-0057,heliponto,existente,Edifício Atrium  V,-23.594722,-46.685,Elevado,21,4.25,VFR,VFR,TRUE,,CAN-0057,TRUE,anac_helipontos,SP0424,SDTJ
+CAN-0058,heliponto,existente,Edifício Atrium IV,-23.593056,-46.686667,Elevado,21,4,VFR,VFR,TRUE,,CAN-0058,TRUE,anac_helipontos,SP0423,SDTG
+CAN-0059,heliponto,existente,Edifício Comendador Alberto Bonfiglioli,-23.564444,-46.651944,Elevado,20,5,VFR,VFR,TRUE,,CAN-0038,FALSE,anac_helipontos,SP0465,SIBB
+CAN-0060,heliponto,existente,Edifício Dacon,-23.580556,-46.683889,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0060,TRUE,anac_helipontos,SP0375,SDKT
+CAN-0061,heliponto,existente,Edifício Dakota,-23.594444,-46.683611,Elevado,18,4,VFR,VFR,TRUE,,CAN-0057,FALSE,anac_helipontos,SP0478,SIDA
+CAN-0062,heliponto,existente,Edifício Edel Trade Center,-23.6025,-46.660556,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0062,TRUE,anac_helipontos,SP0422,SDTC
+CAN-0063,heliponto,existente,Edifício Faria Lima Financial Center,-23.586111,-46.683333,Elevado,24,6,VFR,VFR,TRUE,,CAN-0063,TRUE,anac_helipontos,SP0511,SIJF
+CAN-0064,heliponto,existente,Edifício HSBC Tower,-23.583056,-46.683889,Elevado,20.5,5,VFR,VFR,TRUE,,CAN-0064,TRUE,anac_helipontos,SP0313,SDEA
+CAN-0065,heliponto,existente,Edifício Palladio,-23.594722,-46.685556,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0057,FALSE,anac_helipontos,SP0393,SDOF
+CAN-0066,heliponto,existente,Edifício Ronaldo Sampaio Ferreira,-23.601667,-46.691944,Elevado,21,5,VFR,VFR,TRUE,,CAN-0066,TRUE,anac_helipontos,SP0579,SIYU
+CAN-0067,heliponto,existente,Edifício São Paulo Trade Building,-23.594167,-46.689444,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0053,FALSE,anac_helipontos,SP0358,SDIW
+CAN-0068,heliponto,existente,Eldorado,-23.573056,-46.6975,Elevado,24,5.31,VFR,VFR,TRUE,,CAN-0068,TRUE,anac_helipontos,SP0677,SJXK
+CAN-0069,heliponto,existente,Faria Lima Plaza,-23.566111,-46.693333,Elevado,20.6,4.5,VFR,VFR,TRUE,,CAN-0069,TRUE,anac_helipontos,SP1228,SS6Y
+CAN-0070,heliponto,existente,Faria Lima Square,-23.588611,-46.682778,Elevado,24,6,VFR,VFR,TRUE,,CAN-0070,TRUE,anac_helipontos,SP0644,SJOZ
+CAN-0071,heliponto,existente,Federação Paulista de Futebol,-23.522222,-46.667222,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0071,TRUE,anac_helipontos,SP0331,SDFV
+CAN-0072,heliponto,existente,Federação do Comércio do Estado de São Paulo,-23.558333,-46.652778,Elevado,24,5.31,VFR,VFR,TRUE,,CAN-0072,TRUE,anac_helipontos,SP0617,SJFC
+CAN-0073,heliponto,existente,Francisco Mellão,-23.593611,-46.688611,Elevado,18,4,VFR,VFR,TRUE,,CAN-0073,TRUE,anac_helipontos,SP0371,SDKG
+CAN-0074,heliponto,existente,Frei Caneca Shopping,-23.553889,-46.652778,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0074,TRUE,anac_helipontos,SP0773,SSQX
+CAN-0075,heliponto,existente,Grupo Souza Lima,-23.534722,-46.544444,Elevado,21,4,VFR,VFR,TRUE,,CAN-0075,TRUE,anac_helipontos,SP0636,SJNS
+CAN-0076,heliponto,existente,Guarapiranga,-23.698889,-46.715833,No solo,20,5,VFR,VFR,TRUE,,CAN-0076,TRUE,anac_helipontos,SP1438,SIR6
+CAN-0077,heliponto,existente,Guarapiranga Golf,-23.7875,-46.781667,No solo,24,8.5,VFR,VFR,TRUE,,CAN-0077,TRUE,anac_helipontos,SP0645,SJPB
+CAN-0078,heliponto,existente,HBR Lead Corporate Faria Lima,-23.591944,-46.68,Elevado,20,6,VFR,VFR,TRUE,,CAN-0024,FALSE,anac_helipontos,SP0847,SNIL
+CAN-0079,heliponto,existente,HPE,-23.67,-46.703056,Elevado,21,5,VFR,VFR,TRUE,,CAN-0079,TRUE,anac_helipontos,SP0673,SJWJ
+CAN-0080,heliponto,existente,Helicidade,-23.546667,-46.736944,Elevado,24,6,VFR,VFR,TRUE,,CAN-0080,TRUE,anac_helipontos,SP0467,SIBH
+CAN-0081,heliponto,existente,Helinorte,-23.415,-46.580556,No solo,18,3,VFR,,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0081,TRUE,anac_helipontos,SP0781,SSUH
+CAN-0082,heliponto,existente,Henri Dunant,-23.627222,-46.698611,Elevado,24,6,VFR,VFR,TRUE,,CAN-0082,TRUE,anac_helipontos,SP0786,SSVH
+CAN-0083,heliponto,existente,Higienópolis Medical Center,-23.55,-46.658611,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0083,TRUE,anac_helipontos,SP0816,SWMF
+CAN-0084,heliponto,existente,Hiper-Bergamini,-23.465556,-46.581667,Elevado,24,6,VFR,VFR,TRUE,,CAN-0084,TRUE,anac_helipontos,SP0547,SIRY
+CAN-0085,heliponto,existente,Hospital Albert Einstein,-23.600278,-46.715278,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0085,TRUE,anac_helipontos,SP0349,SDHV
+CAN-0086,heliponto,existente,Hospital Alemão Oswaldo Cruz,-23.569722,-46.643333,Elevado,19.5,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0086,TRUE,anac_helipontos,SP0536,SIOW
+CAN-0087,heliponto,existente,Hospital Alvorada Moema,-23.600833,-46.661111,Elevado,19.5,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0087,TRUE,anac_helipontos,SP0882,SNMP
+CAN-0088,heliponto,existente,Hospital Autódromo José Carlos Pace,-23.7,-46.695278,No solo,19.5,4,VFR,VFR,TRUE,,CAN-0088,TRUE,anac_helipontos,SP0791,SSYH
+CAN-0089,heliponto,existente,Hospital Bandeirantes,-23.5575,-46.634722,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0089,TRUE,anac_helipontos,SP0350,SDHW
+CAN-0090,heliponto,existente,Hospital Gastroclínica,-23.595,-46.651667,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0090,TRUE,anac_helipontos,SP0345,SDHI
+CAN-0091,heliponto,existente,Hospital Paulistano,-23.565,-46.642222,Elevado,21.7,5,VFR,VFR,TRUE,,CAN-0091,TRUE,anac_helipontos,SP0290,SDAP
+CAN-0092,heliponto,existente,Hospital Samaritano,-23.538611,-46.6625,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0092,TRUE,anac_helipontos,SP0308,SDDG
+CAN-0093,heliponto,existente,Hospital Santa Catarina,-23.568889,-46.645556,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0093,TRUE,anac_helipontos,SP0500,SIHK
+CAN-0094,heliponto,existente,Hospital São Camilo Pompéia,-23.533889,-46.688333,Elevado,24,5.3,VFR,VFR,TRUE,,CAN-0094,TRUE,anac_helipontos,SP0654,SJRQ
+CAN-0095,heliponto,existente,Hospital São Luiz,-23.590556,-46.673056,Elevado,20,4,VFR,VFR,TRUE,,CAN-0095,TRUE,anac_helipontos,SP0367,SDJU
+CAN-0096,heliponto,existente,Hospital Sírio Libanês II,-23.557222,-46.653056,Elevado,24,7,VFR,VFR,TRUE,,CAN-0072,FALSE,anac_helipontos,SP0658,SJSL
+CAN-0097,heliponto,existente,Hospital da Polícia Militar,-23.470278,-46.619444,No solo,24,5,VFR,VFR,TRUE,,CAN-0097,TRUE,anac_helipontos,SP0768,SSPQ
+CAN-0098,heliponto,existente,Hospital das Clínicas,-23.558056,-46.669167,Elevado,21,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0098,TRUE,anac_helipontos,SP0379,SDKY
+CAN-0099,heliponto,existente,Hospital do Coração,-23.573056,-46.643611,Elevado,18,4,VFR,VFR,TRUE,,CAN-0099,TRUE,anac_helipontos,SP0392,SDOC
+CAN-0100,heliponto,existente,Hospital e Maternidade Santa Marina,-23.656944,-46.652778,Elevado,20,3.5,VFR,VFR,TRUE,,CAN-0100,TRUE,anac_helipontos,SP0819,SWNI
+CAN-0101,heliponto,existente,Hospital e Maternidade Vitória,-23.563056,-46.561667,Elevado,21,5,VFR,VFR,TRUE,,CAN-0101,TRUE,anac_helipontos,SP0291,SDAT
+CAN-0102,heliponto,existente,Hotel Emiliano,-23.566111,-46.665278,Elevado,19.5,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0102,TRUE,anac_helipontos,SP0373,SDKM
+CAN-0103,heliponto,existente,ICESP - Instituto do Câncer do Estado de São Paulo,-23.556111,-46.668333,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0103,TRUE,anac_helipontos,SP0707,SNID
+CAN-0104,heliponto,existente,IGESP,-23.561111,-46.650833,Elevado,19.6,3.5,VFR,Sem Operação,TRUE,,CAN-0104,TRUE,anac_helipontos,SP0722,SNQC
+CAN-0105,heliponto,existente,ITM Expo,-23.526111,-46.743889,Elevado,24,6,VFR,VFR,TRUE,,CAN-0105,TRUE,anac_helipontos,SP0420,SDSX
+CAN-0106,heliponto,existente,Ibirapuera Park Hotel Ltda,-23.592778,-46.649444,Elevado,19.5,4.5,VFR,VFR,TRUE,,CAN-0106,TRUE,anac_helipontos,SP0403,SDPL
+CAN-0107,heliponto,existente,Igreja Mundial do Poder de Deus - IMPD,-23.550833,-46.620556,Elevado,22.5,12,VFR,VFR,TRUE,,CAN-0107,TRUE,anac_helipontos,SP0365,SDJP
+CAN-0108,heliponto,existente,Internacional Plaza,-23.591389,-46.681667,Elevado,24,6,VFR,VFR,TRUE,,CAN-0024,FALSE,anac_helipontos,SP0513,SIJX
+CAN-0109,heliponto,existente,Internacional Plaza II,-23.591111,-46.682222,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0022,FALSE,anac_helipontos,SP0445,SDXQ
+CAN-0110,heliponto,existente,Itautec,-23.531111,-46.572222,No solo,21,5,VFR,VFR,TRUE,,CAN-0110,TRUE,anac_helipontos,SP0713,SNLR
+CAN-0111,heliponto,existente,Itaúsa,-23.636389,-46.641944,Elevado,24,4,VFR,VFR,TRUE,,CAN-0111,TRUE,anac_helipontos,SP0428,SDTU
+CAN-0112,heliponto,existente,JBS,-23.513611,-46.730833,Elevado,24,6,VFR,VFR,TRUE,,CAN-0112,TRUE,anac_helipontos,SP0832,SWTF
+CAN-0113,heliponto,existente,JK 1455,-23.590833,-46.6825,Elevado,24,6,VFR,VFR,TRUE,,CAN-0022,FALSE,anac_helipontos,SP0756,SSKL
+CAN-0114,heliponto,existente,JKFC,-23.587222,-46.675278,Elevado,21,5,VFR,VFR,TRUE,,CAN-0114,TRUE,anac_helipontos,SP0340,SDGW
+CAN-0115,heliponto,existente,Jardim das Perdizes,-23.52,-46.68,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0115,TRUE,anac_helipontos,SP0608,SJDD
+CAN-0116,heliponto,existente,Joaquim Floriano,-23.583056,-46.671111,Elevado,18,4,VFR,VFR,TRUE,,CAN-0116,TRUE,anac_helipontos,SP0519,SIKT
+CAN-0117,heliponto,existente,Joli,-23.527222,-46.586944,Elevado,21.5,5,VFR,VFR,TRUE,,CAN-0117,TRUE,anac_helipontos,SP1340,SJ7Y
+CAN-0118,heliponto,existente,João Dias,-23.643611,-46.717778,Elevado,24,5,VFR,VFR,TRUE,,CAN-0118,TRUE,anac_helipontos,SP0510,SIJD
+CAN-0119,heliponto,existente,João Domingues de Araújo,-23.604444,-46.693889,Elevado,20,4,VFR,VFR,TRUE,,CAN-0119,TRUE,anac_helipontos,SP0656,SJRZ
+CAN-0120,heliponto,existente,Kartódromo Ayrton Senna,-23.703056,-46.6925,No solo,24,15,VFR,VFR,TRUE,,CAN-0120,TRUE,anac_helipontos,SP0789,SSXK
+CAN-0121,heliponto,existente,Kuka,-23.569167,-46.601389,Elevado,18,3,VFR,Sem Operação,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0121,TRUE,anac_helipontos,SP0455,SDYZ
+CAN-0122,heliponto,existente,Limão,-23.505556,-46.680556,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0122,TRUE,anac_helipontos,SP0849,SWEL
+CAN-0123,heliponto,existente,Maksoud Plaza,-23.563056,-46.651111,Elevado,21,4.3,VFR,VFR,TRUE,,CAN-0123,TRUE,anac_helipontos,SP0545,SIRO
+CAN-0124,heliponto,existente,Mega Mix,-23.535833,-46.618611,Elevado,19.6,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0124,TRUE,anac_helipontos,SP0634,SJMG
+CAN-0125,heliponto,existente,Metropolitan Office,-23.581111,-46.6825,Elevado,18,4,VFR,VFR,TRUE,,CAN-0125,TRUE,anac_helipontos,SP0380,SDLB
+CAN-0126,heliponto,existente,Millennium,-23.583056,-46.683333,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0064,FALSE,anac_helipontos,SP0431,SDUJ
+CAN-0127,heliponto,existente,Millennium Office Park,-23.593056,-46.689722,Elevado,21,4.25,VFR,VFR,TRUE,,CAN-0053,FALSE,anac_helipontos,SP0612,SJEB
+CAN-0128,heliponto,existente,Miss Silvia Morizono,-23.592222,-46.681111,Elevado,22.5,6,VFR,VFR,TRUE,,CAN-0024,FALSE,anac_helipontos,SP1222,SNSZ
+CAN-0129,heliponto,existente,Monte Horebe,-23.538611,-46.6075,Elevado,24,6,VFR,VFR,TRUE,,CAN-0129,TRUE,anac_helipontos,SP0558,SIUD
+CAN-0130,heliponto,existente,Morumbi Corporate,-23.625,-46.701944,Elevado,24,6,VFR,VFR,TRUE,,CAN-0130,TRUE,anac_helipontos,SP0542,SIQM
+CAN-0131,heliponto,existente,New Century,-23.5875,-46.680278,Elevado,21,4.25,VFR,VFR,TRUE,,CAN-0021,FALSE,anac_helipontos,SP0520,SILF
+CAN-0132,heliponto,existente,New England,-23.5525,-46.661667,Elevado,21,12,VFR,VFR,TRUE,,CAN-0132,TRUE,anac_helipontos,SP0613,SJEI
+CAN-0133,heliponto,existente,O Estado de São Paulo,-23.512778,-46.671667,Elevado,19.8,4,VFR,VFR,TRUE,,CAN-0133,TRUE,anac_helipontos,SP0521,SILK
+CAN-0134,heliponto,existente,Office Tower Itaim,-23.581111,-46.679444,Elevado,19.5,4.5,VFR,VFR,TRUE,,CAN-0134,TRUE,anac_helipontos,SP0578,SIYT
+CAN-0135,heliponto,existente,Palácio dos Bandeirantes,-23.6,-46.712778,No solo,30,10,VFR,VFR,TRUE,,CAN-0135,TRUE,anac_helipontos,SP0404,SDPM
+CAN-0136,heliponto,existente,Panco I,-23.527778,-46.494722,Elevado,19.3,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0136,TRUE,anac_helipontos,SP0402,SDPK
+CAN-0137,heliponto,existente,Parque Paulista,-23.560278,-46.659167,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0137,TRUE,anac_helipontos,SP0407,SDPT
+CAN-0138,heliponto,existente,Parque da Cidade Torre B1,-23.625,-46.705,Elevado,22,5,VFR,VFR,TRUE,,CAN-0138,TRUE,anac_helipontos,SP1094,SD6M
+CAN-0139,heliponto,existente,Parque da Cidade Torre B2,-23.625,-46.704167,Elevado,22,5,VFR,VFR,TRUE,,CAN-0138,FALSE,anac_helipontos,SP1110,SD6Q
+CAN-0140,heliponto,existente,Parque da Cidade Torre B3,-23.625,-46.703889,Elevado,22,5,VFR,VFR,TRUE,,CAN-0138,FALSE,anac_helipontos,SP1095,SD6R
+CAN-0141,heliponto,existente,Plaza Centenário,-23.605556,-46.695833,Elevado,18,3,VFR,Sem Operação,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0141,TRUE,anac_helipontos,SP0405,SDPO
+CAN-0142,heliponto,existente,Plaza II,-23.611111,-46.696111,Elevado,20.5,4,VFR,VFR,TRUE,,CAN-0030,FALSE,anac_helipontos,SP0788,SSWD
+CAN-0143,heliponto,existente,Plaza Iguatemi,-23.576667,-46.686667,Elevado,24,10,VFR,VFR,TRUE,,CAN-0143,TRUE,anac_helipontos,SP0516,SIKF
+CAN-0144,heliponto,existente,Plaza JK,-23.590833,-46.685,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0010,FALSE,anac_helipontos,SP0661,SJTD
+CAN-0145,heliponto,existente,Polícia Federal,-23.511389,-46.704444,Elevado,26,6,VFR,VFR,TRUE,,CAN-0145,TRUE,anac_helipontos,SP0479,SIDE
+CAN-0146,heliponto,existente,Porto Seguro,-23.530278,-46.645278,Elevado,20.5,4,VFR,VFR,TRUE,,CAN-0146,TRUE,anac_helipontos,SP0295,SDBF
+CAN-0147,heliponto,existente,Pátio Victor Malzoni,-23.586667,-46.681667,Elevado,30,18,VFR,VFR,TRUE,,CAN-0147,TRUE,anac_helipontos,SP0436,SDVR
+CAN-0148,heliponto,existente,Quadra Hungria,-23.575,-46.696111,Elevado,19.8,4,VFR,VFR,TRUE,,CAN-0148,TRUE,anac_helipontos,SP0619,SJGM
+CAN-0149,heliponto,existente,REC Berrini,-23.608333,-46.694444,Elevado,24,6,VFR,VFR,TRUE,,CAN-0149,TRUE,anac_helipontos,SP0299,SDBR
+CAN-0150,heliponto,existente,REC Berrini TNU,-23.607778,-46.696667,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0150,TRUE,anac_helipontos,SP0426,SDTN
+CAN-0151,heliponto,existente,Rede D'Or São Luiz Anália Franco,-23.548889,-46.558333,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0151,TRUE,anac_helipontos,SP0884,SSUF
+CAN-0152,heliponto,existente,Rede D'Or São Luiz Morumbi,-23.590833,-46.703333,Elevado,20,4,VFR,VFR,TRUE,,CAN-0152,TRUE,anac_helipontos,SP0368,SDJW
+CAN-0153,heliponto,existente,Rede Globo,-23.614722,-46.696944,No solo,21,10,VFR,VFR,TRUE,,CAN-0153,TRUE,anac_helipontos,SP0377,SDKV
+CAN-0154,heliponto,existente,Rede Globo 2,-23.615,-46.698333,Elevado,19.67,4.85,VFR,VFR,TRUE,,CAN-0153,FALSE,anac_helipontos,SP0822,SWOU
+CAN-0155,heliponto,existente,Rede Record,-23.523889,-46.6625,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0155,TRUE,anac_helipontos,SP0497,SIGV
+CAN-0156,heliponto,existente,Rei da Pamonha,-23.445,-46.756944,No solo,24,6,VFR,VFR,TRUE,,CAN-0156,TRUE,anac_helipontos,SP0720,SNPH
+CAN-0157,heliponto,existente,Reik Morumbi,-23.597778,-46.707222,No solo,18,3,VFR,,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0157,TRUE,anac_helipontos,SP0729,SNRW
+CAN-0158,heliponto,existente,Renaissance Hotel,-23.558611,-46.662222,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0158,TRUE,anac_helipontos,SP0414,SDRB
+CAN-0159,heliponto,existente,Represa,-23.616944,-46.698889,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0159,TRUE,anac_helipontos,SP0498,SIGZ
+CAN-0160,heliponto,existente,Resedá Office,-23.5825,-46.674722,Elevado,19.5,4,VFR,VFR,TRUE,,CAN-0160,TRUE,anac_helipontos,SP0526,SIMD
+CAN-0161,heliponto,existente,Rochaverá - Alfa,-23.622778,-46.700556,Elevado,21,4.25,VFR,VFR,TRUE,,CAN-0161,TRUE,anac_helipontos,SP0828,SWRV
+CAN-0162,heliponto,existente,SECOVI,-23.603611,-46.648056,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0162,TRUE,anac_helipontos,SP0454,SDYV
+CAN-0163,heliponto,existente,SESI-FIESP,-23.563611,-46.654722,Elevado,20,5,VFR,VFR,TRUE,,CAN-0009,FALSE,anac_helipontos,SP0460,SDZR
+CAN-0164,heliponto,existente,SUBPREFEITURA DE PARELHEIROS,-23.816389,-46.736667,No solo,18,4,VFR,VFR,TRUE,,CAN-0164,TRUE,anac_helipontos,SP1456,SN2Z
+CAN-0165,heliponto,existente,Seculum,-23.583611,-46.683889,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0064,FALSE,anac_helipontos,SP0686,SJZU
+CAN-0166,heliponto,existente,Shopping Leste Aricanduva,-23.566944,-46.505278,No solo,18,2,VFR,,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0166,TRUE,anac_helipontos,SP0347,SDHQ
+CAN-0167,heliponto,existente,Spazio Faria Lima,-23.585278,-46.682222,Elevado,24,6,VFR,VFR,TRUE,,CAN-0063,FALSE,anac_helipontos,SP0841,SWYD
+CAN-0168,heliponto,existente,Sucupira,-23.624167,-46.703333,Elevado,26,5,VFR,VFR,TRUE,,CAN-0168,TRUE,anac_helipontos,SP0311,SDDS
+CAN-0169,heliponto,existente,São Luiz,-23.590556,-46.686667,Elevado,21,4,VFR,VFR,TRUE,,CAN-0169,TRUE,anac_helipontos,SP0417,SDSN
+CAN-0170,heliponto,existente,São Paulo Corporate Towers,-23.591667,-46.687778,Elevado,30,18,VFR,VFR,TRUE,,CAN-0170,TRUE,anac_helipontos,SP0307,SDCY
+CAN-0171,heliponto,existente,Tek Nações Unidas,-23.616667,-46.701944,Elevado,19.5,5,VFR,VFR,TRUE,,CAN-0171,TRUE,anac_helipontos,SP0871,SWNX
+CAN-0172,heliponto,existente,Thera Corporate,-23.598889,-46.69,Elevado,24,6,VFR,VFR,TRUE,,CAN-0018,FALSE,anac_helipontos,SP1329,SD3C
+CAN-0173,heliponto,existente,Tivoli Center,-23.628611,-46.736667,Elevado,18,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0173,TRUE,anac_helipontos,SP0663,SJTV
+CAN-0174,heliponto,existente,Tivoli Mofarrej,-23.564167,-46.655833,Elevado,19.5,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0009,FALSE,anac_helipontos,SP0664,SJTY
+CAN-0175,heliponto,existente,Torre 2000,-23.566667,-46.686389,Elevado,21,5,VFR,VFR,TRUE,,CAN-0175,TRUE,anac_helipontos,SP0504,SIIH
+CAN-0176,heliponto,existente,Torre Jequitibá,-23.625278,-46.705556,Elevado,24,6,VFR,VFR,TRUE,,CAN-0138,FALSE,anac_helipontos,SP1090,SD2H
+CAN-0177,heliponto,existente,Trimais Center,-23.478611,-46.610278,Elevado,24,5.5,VFR,VFR,TRUE,,CAN-0177,TRUE,anac_helipontos,SP1254,SD3T
+CAN-0178,heliponto,existente,UNICID - Universidade Cidade de São Paulo,-23.536111,-46.559444,Elevado,19,4,VFR,VFR,TRUE,,CAN-0178,TRUE,anac_helipontos,SP0771,SSQV
+CAN-0179,heliponto,existente,Unibanco Eusébio Matoso,-23.572222,-46.698611,Elevado,23,6,VFR,VFR,TRUE,,CAN-0068,FALSE,anac_helipontos,SP0324,SDEZ
+CAN-0180,heliponto,existente,VOCP,-23.594444,-46.688889,Elevado,21,4.5,VFR,VFR,TRUE,,CAN-0073,FALSE,anac_helipontos,SP0524,SILV
+CAN-0181,heliponto,existente,Vivicon,-23.513056,-46.667222,Elevado,19.5,3,VFR,VFR,FALSE,resistencia cadastral abaixo do mtow evtol de referencia,CAN-0181,TRUE,anac_helipontos,SP0669,SJVC
+CAN-0182,heliponto,existente,WT Morumbi,-23.623611,-46.701944,Elevado,21,4.25,VFR,VFR,TRUE,,CAN-0182,TRUE,anac_helipontos,SP1185,SI49
+CAN-0183,heliponto,existente,World Trade Center,-23.608889,-46.696111,Elevado,21,4,VFR,VFR,TRUE,,CAN-0150,FALSE,anac_helipontos,SP0442,SDWT
+CAN-0184,heliponto,existente,Zarzur,-23.57,-46.691944,Elevado,23,4.5,VFR,VFR,TRUE,,CAN-0045,FALSE,anac_helipontos,SP0415,SDRN
+CAN-0185,heliponto,existente,Ônix,-23.551389,-46.722222,No solo,18,4,VFR,VFR,TRUE,,CAN-0185,TRUE,anac_helipontos,SP0397,SDON
+CAN-0186,estacao_transporte,inexistente,AACD-SERVIDOR,-23.59763596,-46.65179988,METRO LILAS,,,,,TRUE,,CAN-0186,TRUE,geosampa_estacao_metro,78,
+CAN-0187,estacao_transporte,inexistente,ADOLFO PINHEIRO,-23.64965262,-46.7038836,METRO LILAS,,,,,TRUE,,CAN-0187,TRUE,geosampa_estacao_metro,69,
+CAN-0188,estacao_transporte,inexistente,ALTO DA BOA VISTA,-23.64150089,-46.69905564,METRO LILAS,,,,,TRUE,,CAN-0188,TRUE,geosampa_estacao_metro,70,
+CAN-0189,estacao_transporte,inexistente,ALTO DO IPIRANGA,-23.60219455,-46.61237016,METRO VERDE,,,,,TRUE,,CAN-0189,TRUE,geosampa_estacao_metro,29,
+CAN-0190,estacao_transporte,inexistente,ANA ROSA,-23.58135505,-46.63862748,METRO VERDE,,,,,TRUE,,CAN-0190,TRUE,geosampa_estacao_metro,26,
+CAN-0191,estacao_transporte,inexistente,ANA ROSA,-23.58125706,-46.63845216,METRO AZUL,,,,,TRUE,,CAN-0190,FALSE,geosampa_estacao_metro,49,
+CAN-0192,estacao_transporte,inexistente,ANHANGABAÚ,-23.5479476,-46.6388856,METRO VERMELHA,,,,,TRUE,,CAN-0040,FALSE,geosampa_estacao_metro,14,
+CAN-0193,estacao_transporte,inexistente,ARMÊNIA,-23.5255001,-46.62933984,METRO AZUL,,,,,TRUE,,CAN-0193,TRUE,geosampa_estacao_metro,40,
+CAN-0194,estacao_transporte,inexistente,ARTUR ALVIM,-23.54028841,-46.48458996,METRO VERMELHA,,,,,TRUE,,CAN-0194,TRUE,geosampa_estacao_metro,2,
+CAN-0195,estacao_transporte,inexistente,AYRTON SENNA-JARDIM SÃO PAULO,-23.49241655,-46.61710956,METRO AZUL,,,,,TRUE,,CAN-0195,TRUE,geosampa_estacao_metro,36,
+CAN-0196,estacao_transporte,inexistente,BELÉM,-23.5430226,-46.59010776,METRO VERMELHA,,,,,TRUE,,CAN-0196,TRUE,geosampa_estacao_metro,9,
+CAN-0197,estacao_transporte,inexistente,BORBA GATO,-23.63336119,-46.6930152,METRO LILAS,,,,,TRUE,,CAN-0197,TRUE,geosampa_estacao_metro,71,
+CAN-0198,estacao_transporte,inexistente,BRESSER-MOOCA,-23.54647636,-46.60754004,METRO VERMELHA,,,,,TRUE,,CAN-0198,TRUE,geosampa_estacao_metro,10,
+CAN-0199,estacao_transporte,inexistente,BRIGADEIRO,-23.56888001,-46.64735388,METRO VERDE,,,,,TRUE,,CAN-0199,TRUE,geosampa_estacao_metro,24,
+CAN-0200,estacao_transporte,inexistente,BROOKLIN,-23.6272532,-46.68802848,METRO LILAS,,,,,TRUE,,CAN-0200,TRUE,geosampa_estacao_metro,72,
+CAN-0201,estacao_transporte,inexistente,BRÁS,-23.5478844,-46.61590896,METRO VERMELHA,,,,,TRUE,,CAN-0201,TRUE,geosampa_estacao_metro,11,
+CAN-0202,estacao_transporte,inexistente,BUTANTÃ,-23.5719929,-46.7082396,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0202,TRUE,geosampa_estacao_metro,84,
+CAN-0203,estacao_transporte,inexistente,CAMILO HADDAD,-23.59541293,-46.5376932,METRO PRATA,,,,,TRUE,,CAN-0203,TRUE,geosampa_estacao_metro,62,
+CAN-0204,estacao_transporte,inexistente,CAMPO BELO,-23.61897391,-46.68231888,METRO LILAS,,,,,TRUE,,CAN-0204,TRUE,geosampa_estacao_metro,89,
+CAN-0205,estacao_transporte,inexistente,CAMPO LIMPO,-23.64938436,-46.75896072,METRO LILAS,,,,,TRUE,,CAN-0205,TRUE,geosampa_estacao_metro,64,
+CAN-0206,estacao_transporte,inexistente,CAPÃO REDONDO,-23.65929923,-46.7680122,METRO LILAS,,,,,TRUE,,CAN-0206,TRUE,geosampa_estacao_metro,63,
+CAN-0207,estacao_transporte,inexistente,CARANDIRU,-23.50927562,-46.6249626,METRO AZUL,,,,,TRUE,,CAN-0207,TRUE,geosampa_estacao_metro,38,
+CAN-0208,estacao_transporte,inexistente,CARRÃO,-23.53785103,-46.56415536,METRO VERMELHA,,,,,TRUE,,CAN-0208,TRUE,geosampa_estacao_metro,7,
+CAN-0209,estacao_transporte,inexistente,CHÁCARA KLABIN,-23.59263183,-46.63048644,METRO VERDE,,,,,TRUE,,CAN-0209,TRUE,geosampa_estacao_metro,27,
+CAN-0210,estacao_transporte,inexistente,CHÁCARA KLABIN,-23.59263183,-46.63048644,METRO LILAS,,,,,TRUE,,CAN-0209,FALSE,geosampa_estacao_metro,77,
+CAN-0211,estacao_transporte,inexistente,CLÍNICAS,-23.5541111,-46.67076216,METRO VERDE,,,,,TRUE,,CAN-0211,TRUE,geosampa_estacao_metro,21,
+CAN-0212,estacao_transporte,inexistente,CONCEIÇÃO,-23.63537778,-46.64133216,METRO AZUL,,,,,TRUE,,CAN-0111,FALSE,geosampa_estacao_metro,55,
+CAN-0213,estacao_transporte,inexistente,CONSOLAÇÃO,-23.55722797,-46.66119228,METRO VERDE,,,,,TRUE,,CAN-0213,TRUE,geosampa_estacao_metro,22,
+CAN-0214,estacao_transporte,inexistente,CORINTHIANS-ITAQUERA,-23.54230527,-46.47107772,METRO VERMELHA,,,,,TRUE,,CAN-0214,TRUE,geosampa_estacao_metro,1,
+CAN-0215,estacao_transporte,inexistente,EUCALIPTOS,-23.61014504,-46.66899132,METRO LILAS,,,,,TRUE,,CAN-0215,TRUE,geosampa_estacao_metro,73,
+CAN-0216,estacao_transporte,inexistente,FARIA LIMA,-23.56715823,-46.69398792,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0069,FALSE,geosampa_estacao_metro,82,
+CAN-0217,estacao_transporte,inexistente,FAZENDA DA JUTA,-23.61168829,-46.4874719,METRO PRATA,,,,,TRUE,,CAN-0217,TRUE,geosampa_estacao_metro,91,
+CAN-0218,estacao_transporte,inexistente,FRADIQUE COUTINHO,-23.56616863,-46.68416496,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0218,TRUE,geosampa_estacao_metro,85,
+CAN-0219,estacao_transporte,inexistente,GIOVANNI GRONCHI,-23.6439647,-46.73409624,METRO LILAS,,,,,TRUE,,CAN-0219,TRUE,geosampa_estacao_metro,66,
+CAN-0220,estacao_transporte,inexistente,GUILHERMINA-ESPERANÇA,-23.52926294,-46.51654824,METRO VERMELHA,,,,,TRUE,,CAN-0220,TRUE,geosampa_estacao_metro,4,
+CAN-0221,estacao_transporte,inexistente,HIGIENÓPOLIS-MACKENZIE,-23.54895152,-46.6522614,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0221,TRUE,geosampa_estacao_metro,86,
+CAN-0222,estacao_transporte,inexistente,HOSPITAL SÃO PAULO,-23.59815983,-46.64535984,METRO LILAS,,,,,TRUE,,CAN-0222,TRUE,geosampa_estacao_metro,75,
+CAN-0223,estacao_transporte,inexistente,JABAQUARA,-23.64648321,-46.64099088,METRO AZUL,,,,,TRUE,,CAN-0223,TRUE,geosampa_estacao_metro,56,
+CAN-0224,estacao_transporte,inexistente,JAPÃO-LIBERDADE,-23.55497637,-46.6357338,METRO AZUL,,,,,TRUE,,CAN-0224,TRUE,geosampa_estacao_metro,45,
+CAN-0225,estacao_transporte,inexistente,JARDIM PLANALTO,-23.60739076,-46.50705248,METRO PRATA,,,,,TRUE,,CAN-0225,TRUE,geosampa_estacao_metro,93,
+CAN-0226,estacao_transporte,inexistente,LARGO TREZE,-23.65446316,-46.70953524,METRO LILAS,,,,,TRUE,,CAN-0226,TRUE,geosampa_estacao_metro,68,
+CAN-0227,estacao_transporte,inexistente,LUZ,-23.53690231,-46.63367028,METRO AZUL,,,,,TRUE,,CAN-0227,TRUE,geosampa_estacao_metro,42,
+CAN-0228,estacao_transporte,inexistente,LUZ,-23.53615475,-46.6344918,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0227,FALSE,geosampa_estacao_metro,79,
+CAN-0229,estacao_transporte,inexistente,MARECHAL DEODORO,-23.53351827,-46.65602664,METRO VERMELHA,,,,,TRUE,,CAN-0229,TRUE,geosampa_estacao_metro,17,
+CAN-0230,estacao_transporte,inexistente,MOEMA,-23.60332886,-46.6619868,METRO LILAS,,,,,TRUE,,CAN-0230,TRUE,geosampa_estacao_metro,74,
+CAN-0231,estacao_transporte,inexistente,ORATÓRIO,-23.58217758,-46.56189996,METRO PRATA,,,,,TRUE,,CAN-0231,TRUE,geosampa_estacao_metro,57,
+CAN-0232,estacao_transporte,inexistente,OSCAR FREIRE,-23.56051817,-46.67208372,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0232,TRUE,geosampa_estacao_metro,87,
+CAN-0233,estacao_transporte,inexistente,PALMEIRAS-BARRA FUNDA,-23.52594769,-46.66737276,METRO VERMELHA,,,,,TRUE,,CAN-0233,TRUE,geosampa_estacao_metro,18,
+CAN-0234,estacao_transporte,inexistente,PARADA INGLESA,-23.48703268,-46.60882092,METRO AZUL,,,,,TRUE,,CAN-0234,TRUE,geosampa_estacao_metro,35,
+CAN-0235,estacao_transporte,inexistente,PARAÍSO,-23.5757681,-46.64105568,METRO VERDE,,,,,TRUE,,CAN-0235,TRUE,geosampa_estacao_metro,25,
+CAN-0236,estacao_transporte,inexistente,PARAÍSO,-23.57572421,-46.6407738,METRO AZUL,,,,,TRUE,,CAN-0235,FALSE,geosampa_estacao_metro,48,
+CAN-0237,estacao_transporte,inexistente,PATRIARCA,-23.53118276,-46.5013818,METRO VERMELHA,,,,,TRUE,,CAN-0237,TRUE,geosampa_estacao_metro,3,
+CAN-0238,estacao_transporte,inexistente,PAULISTA,-23.55507587,-46.6621866,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0238,TRUE,geosampa_estacao_metro,81,
+CAN-0239,estacao_transporte,inexistente,PEDRO II,-23.54971551,-46.6259094,METRO VERMELHA,,,,,TRUE,,CAN-0239,TRUE,geosampa_estacao_metro,12,
+CAN-0240,estacao_transporte,inexistente,PENHA,-23.53348131,-46.54234908,METRO VERMELHA,,,,,TRUE,,CAN-0240,TRUE,geosampa_estacao_metro,6,
+CAN-0241,estacao_transporte,inexistente,PINHEIROS,-23.56718347,-46.70169552,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0241,TRUE,geosampa_estacao_metro,83,
+CAN-0242,estacao_transporte,inexistente,PORTUGUESA-TIETÊ,-23.51613134,-46.62516132,METRO AZUL,,,,,TRUE,,CAN-0242,TRUE,geosampa_estacao_metro,39,
+CAN-0243,estacao_transporte,inexistente,PRAÇA DA ÁRVORE,-23.61064181,-46.63788372,METRO AZUL,,,,,TRUE,,CAN-0243,TRUE,geosampa_estacao_metro,52,
+CAN-0244,estacao_transporte,inexistente,REPÚBLICA,-23.54389388,-46.64314908,METRO VERMELHA,,,,,TRUE,,CAN-0244,TRUE,geosampa_estacao_metro,15,
+CAN-0245,estacao_transporte,inexistente,REPÚBLICA,-23.54458216,-46.64302524,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0244,FALSE,geosampa_estacao_metro,80,
+CAN-0246,estacao_transporte,inexistente,SACOMÃ,-23.60141487,-46.60317216,METRO VERDE,,,,,TRUE,,CAN-0246,TRUE,geosampa_estacao_metro,30,
+CAN-0247,estacao_transporte,inexistente,SANTA CECÍLIA,-23.53963806,-46.64887956,METRO VERMELHA,,,,,TRUE,,CAN-0247,TRUE,geosampa_estacao_metro,16,
+CAN-0248,estacao_transporte,inexistente,SANTA CRUZ,-23.59882935,-46.63668816,METRO AZUL,,,,,TRUE,,CAN-0248,TRUE,geosampa_estacao_metro,51,
+CAN-0249,estacao_transporte,inexistente,SANTA CRUZ,-23.59847538,-46.6371774,METRO LILAS,,,,,TRUE,,CAN-0248,FALSE,geosampa_estacao_metro,76,
+CAN-0250,estacao_transporte,inexistente,SANTANA,-23.50256893,-46.62477288,METRO AZUL,,,,,TRUE,,CAN-0250,TRUE,geosampa_estacao_metro,37,
+CAN-0251,estacao_transporte,inexistente,SANTO AMARO,-23.65575018,-46.72093428,METRO LILAS,,,,,TRUE,,CAN-0251,TRUE,geosampa_estacao_metro,67,
+CAN-0252,estacao_transporte,inexistente,SANTOS-IMIGRANTES,-23.59593764,-46.6207002,METRO VERDE,,,,,TRUE,,CAN-0252,TRUE,geosampa_estacao_metro,28,
+CAN-0253,estacao_transporte,inexistente,SANTUÁRIO NOSSA SENHORA DE FÁTIMA-SUMARÉ,-23.55101627,-46.67753844,METRO VERDE,,,,,TRUE,,CAN-0253,TRUE,geosampa_estacao_metro,20,
+CAN-0254,estacao_transporte,inexistente,SAPOPEMBA,-23.61475302,-46.50142723,METRO PRATA,,,,,TRUE,,CAN-0254,TRUE,geosampa_estacao_metro,92,
+CAN-0255,estacao_transporte,inexistente,SAÚDE,-23.61860894,-46.63923732,METRO AZUL,,,,,TRUE,,CAN-0255,TRUE,geosampa_estacao_metro,53,
+CAN-0256,estacao_transporte,inexistente,SÃO BENTO,-23.54408415,-46.63416672,METRO AZUL,,,,,TRUE,,CAN-0256,TRUE,geosampa_estacao_metro,43,
+CAN-0257,estacao_transporte,inexistente,SÃO JOAQUIM,-23.56191105,-46.6386966,METRO AZUL,,,,,TRUE,,CAN-0257,TRUE,geosampa_estacao_metro,46,
+CAN-0258,estacao_transporte,inexistente,SÃO JUDAS,-23.62575151,-46.6408116,METRO AZUL,,,,,TRUE,,CAN-0258,TRUE,geosampa_estacao_metro,54,
+CAN-0259,estacao_transporte,inexistente,SÃO LUCAS,-23.58929459,-46.5443694,METRO PRATA,,,,,TRUE,,CAN-0259,TRUE,geosampa_estacao_metro,59,
+CAN-0260,estacao_transporte,inexistente,SÃO MATEUS,-23.61208758,-46.47668223,METRO PRATA,,,,,TRUE,,CAN-0260,TRUE,geosampa_estacao_metro,90,
+CAN-0261,estacao_transporte,inexistente,SÃO PAULO-MORUMBI,-23.58638894,-46.72383012,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0261,TRUE,geosampa_estacao_metro,88,
+CAN-0262,estacao_transporte,inexistente,SÉ,-23.55092139,-46.6331346,METRO VERMELHA,,,,,TRUE,,CAN-0262,TRUE,geosampa_estacao_metro,13,
+CAN-0263,estacao_transporte,inexistente,SÉ,-23.55100043,-46.63308816,METRO AZUL,,,,,TRUE,,CAN-0262,FALSE,geosampa_estacao_metro,44,
+CAN-0264,estacao_transporte,inexistente,TAMANDUATEÍ,-23.59293848,-46.5895746,METRO VERDE,,,,,TRUE,,CAN-0264,TRUE,geosampa_estacao_metro,31,
+CAN-0265,estacao_transporte,inexistente,TATUAPÉ,-23.54043989,-46.57628448,METRO VERMELHA,,,,,TRUE,,CAN-0265,TRUE,geosampa_estacao_metro,8,
+CAN-0266,estacao_transporte,inexistente,TIRADENTES,-23.53065813,-46.6321716,METRO AZUL,,,,,TRUE,,CAN-0266,TRUE,geosampa_estacao_metro,41,
+CAN-0267,estacao_transporte,inexistente,TRIANON-MASP,-23.56316136,-46.654416,METRO VERDE,,,,,TRUE,,CAN-0008,FALSE,geosampa_estacao_metro,23,
+CAN-0268,estacao_transporte,inexistente,TUCURUVI,-23.47998047,-46.60315056,METRO AZUL,,,,,TRUE,,CAN-0268,TRUE,geosampa_estacao_metro,34,
+CAN-0269,estacao_transporte,inexistente,VERGUEIRO,-23.56891466,-46.6399368,METRO AZUL,,,,,TRUE,,CAN-0269,TRUE,geosampa_estacao_metro,47,
+CAN-0270,estacao_transporte,inexistente,VILA DAS BELEZAS,-23.64040617,-46.74573648,METRO LILAS,,,,,TRUE,,CAN-0270,TRUE,geosampa_estacao_metro,65,
+CAN-0271,estacao_transporte,inexistente,VILA MADALENA,-23.54639071,-46.69085484,METRO VERDE,,,,,TRUE,,CAN-0271,TRUE,geosampa_estacao_metro,19,
+CAN-0272,estacao_transporte,inexistente,VILA MARIANA,-23.58910752,-46.63465092,METRO AZUL,,,,,TRUE,,CAN-0272,TRUE,geosampa_estacao_metro,33,
+CAN-0273,estacao_transporte,inexistente,VILA MARIANA,-23.58910752,-46.63465092,METRO AZUL,,,,,TRUE,,CAN-0272,FALSE,geosampa_estacao_metro,50,
+CAN-0274,estacao_transporte,inexistente,VILA MATILDE,-23.53187738,-46.53100548,METRO VERMELHA,,,,,TRUE,,CAN-0274,TRUE,geosampa_estacao_metro,5,
+CAN-0275,estacao_transporte,inexistente,VILA PRUDENTE,-23.58432594,-46.58190624,METRO VERDE,,,,,TRUE,,CAN-0275,TRUE,geosampa_estacao_metro,32,
+CAN-0276,estacao_transporte,inexistente,VILA PRUDENTE,-23.58474956,-46.58378796,METRO PRATA,,,,,TRUE,,CAN-0276,TRUE,geosampa_estacao_metro,58,
+CAN-0277,estacao_transporte,inexistente,VILA SÔNIA,-23.59341763,-46.73475752,VIAQUATRO AMARELA,,,,,TRUE,,CAN-0277,TRUE,geosampa_estacao_metro,94,
+CAN-0278,estacao_transporte,inexistente,VILA TOLSTÓI,-23.60092053,-46.52709516,METRO PRATA,,,,,TRUE,,CAN-0278,TRUE,geosampa_estacao_metro,60,
+CAN-0279,estacao_transporte,inexistente,VILA UNIÃO,-23.60286983,-46.516113,METRO PRATA,,,,,TRUE,,CAN-0279,TRUE,geosampa_estacao_metro,61,
