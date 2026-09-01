@@ -86,10 +86,11 @@ Este é o parâmetro que mais move o conjunto, e ele não é contínuo:
 | 4,0 t | 148 |
 
 O conjunto é plano até 3,0 t e cai de 183 para 150 em 3,2 t, porque 3,0 t é o
-valor de projeto mais comum dos helipontos de cobertura da cidade. Ou seja: a
-escolha da aeronave de referência, e não o dado, decide um terço do conjunto.
-O limiar fica parametrizado no topo de `app/02-locais-candidatos.R` para
-entrar na análise de sensibilidade exigida em 4.4.
+valor de projeto mais comum dos helipontos de cobertura da cidade. São 35 dos
+185 helipontos — cerca de um quinto da camada, 13% do conjunto de 279 — que
+entram ou saem por causa da aeronave de referência escolhida, e não por causa
+do dado. O limiar fica parametrizado no topo de `app/02-locais-candidatos.R`
+para entrar na análise de sensibilidade exigida em 4.4.
 
 ## Agrupamento espacial
 
