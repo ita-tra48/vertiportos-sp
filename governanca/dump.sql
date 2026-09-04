@@ -130,3 +130,4 @@ INSERT INTO evento VALUES ('evt-wl31l5', '2026-09-04 05:20:29.048986', 'Gustavo 
 INSERT INTO evento VALUES ('evt-jn8ald', '2026-09-04 05:20:35.061371', 'Gustavo Vidal', 'aresta', 'ia-lli1vb', '{"destino": "tar-qnp2wx", "relacao": "informa"}');
 INSERT INTO evento VALUES ('evt-8zkzhr', '2026-09-04 05:20:35.237115', 'Gustavo Vidal', 'aresta', 'ia-lli1vb', '{"destino": "dec-7x2w6a", "relacao": "informa"}');
 INSERT INTO evento VALUES ('evt-b20xlk', '2026-09-04 05:20:35.411835', 'Gustavo Vidal', 'aresta', 'ia-lli1vb', '{"destino": "dec-oux0g8", "relacao": "informa"}');
+INSERT INTO evento VALUES ('evt-6mxq79', '2026-09-04 05:36:31.728967', 'Gustavo Vidal', 'tarefa', 'tar-qnp2wx', '{"branch": "tarefa/tar-qnp2wx-grafo-obsidian", "prazo": "2026-09-05", "resp": "Gustavo", "status": "aberta", "titulo": "Refazer o grafo do site no modelo do Obsidian e tirar o carimbo de aprovado da folha de estado"}');

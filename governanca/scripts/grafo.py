@@ -182,7 +182,6 @@ def _controles():
             f'<div>{campos}</div></details>')
 
 
-
 def _legenda():
     chips = "".join(
         f'<button type="button" class="grafo-chip ativo" data-tipo="{tipo}">'
@@ -201,8 +200,6 @@ def _filtros():
                               ("concluidos", "Concluídos")))
     return (f'<div class="grafo-filtros" id="grafo-filtros">{itens}'
             f'{_controles()}</div>')
-
-
 
 
 ESTILO_HOME = """
