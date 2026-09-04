@@ -191,22 +191,78 @@ def test_aplica_filtros_esconde_tooltip(cenario):
     assert trecho.split("\n")[1].strip() == "escondeTooltip();"
 
 
-def test_rotulo_oculto_por_padrao_no_css():
-    assert ".grafo-rotulo{display:none}" in grafo.ESTILO_HOME
+def test_rotulo_do_no_e_a_sigla_e_some_no_zoom_afastado(cenario):
+    con, met, dec = cenario
+    nos, _ = grafo.dados_nos(con)
+    siglas = {n["id"]: n["sigla"] for n in nos}
+    assert siglas[met] == "MT1"
+    assert siglas[dec] == "DC1"
+    html = grafo.pagina_home(con)
+    assert "texto.textContent = no.sigla;" in html
+    assert ".grafo-sem-rotulo .grafo-rotulo{opacity:0}" in grafo.ESTILO_HOME
 
 
-def test_rotulo_aparece_ao_selecionar(cenario):
+def test_sigla_numera_por_tipo_na_ordem_de_criacao(tmp_repo, monkeypatch):
+    monkeypatch.setenv("GOV_AUTOR", "Gustavo")
+    roda("meta", "Primeira")
+    roda("meta", "Segunda")
+    roda("pendencia", "Trava")
+    nos, _ = grafo.dados_nos(banco.conecta())
+    por_titulo = {n["titulo"]: n["sigla"] for n in nos}
+    assert por_titulo["Primeira"] == "MT1"
+    assert por_titulo["Segunda"] == "MT2"
+    assert por_titulo["Trava"] == "PD1"
+
+
+def test_grau_do_no_dimensiona_o_ponto(cenario):
+    con, met, dec = cenario
+    nos, _ = grafo.dados_nos(con)
+    grau = {n["id"]: n["grau"] for n in nos}
+    assert grau[met] == 1
+    assert grau[dec] == 1
+    assert "function raioDe(no){" in grafo.pagina_home(con)
+
+
+def test_hover_acende_vizinhanca_e_mostra_o_nome_inteiro(cenario):
     con, _, _ = cenario
     html = grafo.pagina_home(con)
-    assert "grafo-mostra-rotulo" in html
-    assert "class', 'grafo-rotulo'" in html
+    assert "'pointerenter'" in html
+    assert "focado = id; aplicaDestaque(); mostraTooltip(id, e);" in html
+    assert "nome.textContent = no.titulo;" in html
+    assert ".grafo-apagado{opacity:.12}" in grafo.ESTILO_HOME
 
 
-def test_deep_link_seleciona_no_id_da_url(cenario):
+def test_clique_abre_a_ficha_com_campos_e_ligacoes(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    assert 'id="grafo-ficha"' in html
+    assert "if (!moveu) { abre(id); }" in html
+    assert "function desenhaFicha(id){" in html
+    assert "'Ligações ('" in html
+    assert "'trilha.html#' + encodeURIComponent(id)" in html
+
+
+def test_palco_tem_zoom_pan_e_seta_de_direcao(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    assert 'id="grafo-camera"' in html
+    assert "'wheel'" in html
+    assert "marker-end" in html
+    assert 'id="grafo-seta"' in html
+
+
+def test_controles_de_forca_expostos(cenario):
+    con, _, _ = cenario
+    html = grafo.pagina_home(con)
+    for alvo in ("grafo-repulsao", "grafo-distancia", "grafo-centro"):
+        assert f'id="{alvo}"' in html
+
+
+def test_deep_link_abre_a_ficha_do_id_da_url(cenario):
     con, _, _ = cenario
     html = grafo.pagina_home(con)
     assert "window.location.hash" in html
-    assert "selecionaSemNavegar" in html
+    assert "abre(alvoUrl && nos[alvoUrl] ? alvoUrl : null);" in html
 
 
 def test_no_interno_fica_fora_do_coleta(tmp_repo, monkeypatch):

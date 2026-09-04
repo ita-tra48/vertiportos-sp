@@ -139,21 +139,7 @@ margin:calc(var(--u)*4) 0 calc(var(--u)*1.5)}
 main h2:first-of-type{margin-top:calc(var(--u)*3)}
 p{max-width:68ch;margin:0 0 calc(var(--u)*1.5)}
 .nota{color:var(--nanquim2);font-size:.9rem}
-.carimbo{display:grid;grid-template-columns:minmax(21rem,26rem) 1fr;
-gap:calc(var(--u)*5);align-items:start;
-padding:calc(var(--u)*2) 0 calc(var(--u)*5)}
-.marca{border:3px double currentColor;padding:calc(var(--u)*3) calc(var(--u)*2);
-text-align:center;font:700 2.55rem/1 var(--mono);letter-spacing:.12em;
-text-indent:.12em;animation:bate .5s cubic-bezier(.16,1,.3,1) 1}
-.marca small{display:block;margin-top:10px;font-size:.55rem;letter-spacing:.1em;
-font-weight:400}
-.marca.aprovado{color:var(--carimbo);background:var(--carimbo-fraco)}
-.marca.reprovado{color:var(--lapis);background:var(--lapis-fraco)}
-.marca.pendente{color:var(--grafite);background:#eff0f2;font-size:1.85rem}
-@keyframes bate{from{transform:scale(1.035);filter:blur(1.5px)}
-to{transform:scale(1);filter:blur(0)}}
-@media(prefers-reduced-motion:reduce){.marca{animation:none}}
-.motivos{margin:0;padding:0;list-style:none;font-size:1rem;
+.motivos{margin:0 0 calc(var(--u)*4);padding:0;list-style:none;font-size:1rem;
 border-top:1px solid var(--nanquim)}
 .motivos li{display:grid;grid-template-columns:2.6rem 1fr;gap:4px;
 padding:9px 0;border-bottom:1px solid var(--fio)}
@@ -227,7 +213,6 @@ nav ol{display:flex;flex-wrap:wrap}
 nav a{border-left:0;border-bottom:3px solid transparent;padding:6px 12px}
 nav a[aria-current]{border-left:0;border-bottom-color:var(--anil)}
 .cabeca{grid-template-columns:1fr}
-.carimbo{grid-template-columns:1fr}
 .reg dl{grid-template-columns:1fr}
 .folha{margin:0;border-left:0;border-right:0}}
 """ + grafo.ESTILO_HOME
@@ -324,22 +309,14 @@ def _pagina(arquivo, titulo, corpo, m, extra=""):
             f'</article>{extra}</body></html>')
 
 
-def _selo(m):
-    cor, motivos = m["selo"]
-    classe = {"verde": "aprovado", "cinza": "pendente"}.get(cor, "reprovado")
-    rotulo = {"verde": "APROVADO", "cinza": "NÃO AUDITADO"}.get(cor, "REPROVADO")
-    if motivos:
-        itens = "".join(
-            f'<li><b>{n}.</b><span>{_esc(x)}</span></li>'
-            for n, x in enumerate(motivos, start=1))
-        lado = (f'<h2>Apontamentos da auditoria</h2>'
-                f'<ol class="motivos">{itens}</ol>')
-    else:
-        lado = ('<p class="limpo">Nenhum apontamento: nenhum nó órfão, toda '
-                'decisão vinculada a uma meta, nenhuma pendência envelhecida e '
-                'aceite de IA abaixo de 100%.</p>')
-    return (f'<section class="carimbo"><div class="marca {classe}">{rotulo}'
-            f'<small>Selo de auditoria</small></div><div>{lado}</div></section>')
+def _apontamentos(m):
+    motivos = m["selo"][1]
+    if not motivos:
+        return ""
+    itens = "".join(f'<li><b>{n}.</b><span>{_esc(x)}</span></li>'
+                    for n, x in enumerate(motivos, start=1))
+    return (f'<h2>Apontamentos da auditoria</h2>'
+            f'<ol class="motivos">{itens}</ol>')
 
 
 def _estado(con, m):
@@ -377,7 +354,7 @@ def _estado(con, m):
         "SELECT strftime(criado_em, '%Y-%m-%d %H:%M'), titulo, justificativa, "
         "criado_por FROM decisao ORDER BY criado_em DESC, id DESC LIMIT 8"
         ).fetchall(), "Nenhuma decisão registrada.")
-    return (f'{_selo(m)}<h2>Índices auditados</h2>{indices}'
+    return (f'<h2>Índices auditados</h2>{indices}{_apontamentos(m)}'
             f'<h2>Metas</h2>{metas}'
             f'<h2>Próximas ações</h2>{acoes}'
             f'<h2>Últimas decisões</h2>{decisoes}')
