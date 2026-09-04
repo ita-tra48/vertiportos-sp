@@ -50,11 +50,13 @@ def test_grafo_html_redireciona_para_index(cenario):
     assert 'url=index.html' in html
 
 
-def test_estado_mostra_selo_e_metas(cenario):
+def test_estado_comeca_nos_indices_sem_carimbo(cenario):
     destino = site_gov.gera(cenario / "governanca" / "site")
     html = (destino / "estado.html").read_text()
     assert "Localizar vertiportos na cidade de Sao Paulo" in html
-    assert "selo" in html.lower()
+    assert '<h2 class="clausula">2 · Estado</h2><h2>Índices auditados</h2>' in html
+    assert 'class="carimbo"' not in html
+    assert 'class="marca' not in html
 
 
 def test_pagina_ia_mostra_taxa_e_critica(cenario):
