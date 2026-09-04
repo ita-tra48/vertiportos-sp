@@ -1,0 +1,29 @@
+name: cobranca
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      seco:
+        description: 'Só imprime os e-mails, sem enviar'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  cobra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r governanca/requirements.txt
+      - run: python governanca/scripts/gov.py rebuild
+      - run: |
+          python governanca/scripts/cobranca.py \
+            ${{ inputs.seco && '--seco' || '' }}
+        env:
+          EMAILS_JSON: ${{ secrets.EMAILS_JSON }}
+          SMTP_USUARIO: ${{ secrets.SMTP_USUARIO }}
+          SMTP_SENHA: ${{ secrets.SMTP_SENHA }}
