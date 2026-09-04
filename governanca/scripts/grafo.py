@@ -114,7 +114,7 @@ ALTURA_HOME = 640
 def dados_nos(con):
     linhas = con.execute(
         "SELECT n.entidade_id, n.tipo, c.criado_por, "
-        "strftime(c.criado_em, '%Y-%m-%d %H:%M'), n.payload "
+        "strftime(c.criado_em, '%Y-%m-%d %H:%M'), n.payload, c.criado_em "
         "FROM no n JOIN criacao c USING (entidade_id) "
         "WHERE n.payload->>'interno' IS DISTINCT FROM 'true' "
         "ORDER BY n.entidade_id").fetchall()
@@ -123,7 +123,9 @@ def dados_nos(con):
         "ORDER BY origem, relacao, destino").fetchall()
     status_por_id = {}
     nos = []
-    for eid, tipo, autor, criado_em, payload_bruto in linhas:
+    nascimento = {}
+    for eid, tipo, autor, criado_em, payload_bruto, ts in linhas:
+        nascimento[eid] = ts
         payload = json.loads(payload_bruto)
         status = payload.get("status")
         status_por_id[eid] = status
@@ -141,7 +143,7 @@ def dados_nos(con):
         no["concluido"] = no["status"] in CONCLUIDOS and no["id"] not in bloqueados
     arestas_saida = [{"origem": o, "relacao": r, "destino": d}
                      for o, r, d in arestas if o in ids and d in ids]
-    numera(nos)
+    numera(nos, nascimento)
     grau = {n["id"]: 0 for n in nos}
     for a in arestas_saida:
         grau[a["origem"]] += 1
@@ -151,9 +153,9 @@ def dados_nos(con):
     return nos, arestas_saida
 
 
-def numera(nos):
+def numera(nos, nascimento):
     contagem = {}
-    for no in sorted(nos, key=lambda n: (n["criado_em"], n["id"])):
+    for no in sorted(nos, key=lambda n: (nascimento[n["id"]], n["id"])):
         ordem = contagem[no["tipo"]] = contagem.get(no["tipo"], 0) + 1
         no["sigla"] = f'{SIGLAS.get(no["tipo"], no["tipo"][:2].upper())}{ordem}'
 
